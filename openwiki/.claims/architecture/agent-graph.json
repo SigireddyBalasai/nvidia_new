@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:672c959f98da28cb5461561dd6950a8b58521185e38ed92f4098172ae1aafa3f",
+  "claims": [
+    {
+      "id": "claim_d5a234d12c0c470dac3696b77a955751",
+      "statement": "The agent graph is built via create_deep_agent() from the deepagents library, configured with DEFAULT_MODEL, a utc_now tool, two subagents (researcher and critic), and CopilotKitMiddleware.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L64-L74",
+          "version": "repo-lines-v1:sha256:18045d0372fd15a2b853a6a4e3de6ffbce293974fbd32d3aa2537a0eff103126:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjODUxZWRlOTNhYjNlNWJmODM1YjYzNDcxYTQ5N2M3YmI4YTA3Y2JiZDM5OWY4ZTk1NzMzOGQwODZhZDg0ODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZDE3MWRlNzU0MzFhMDIxYTBkOTRmYTc2ZmFiZjBkNzEzOWM4OThjMWEwYjQ0YjQzY2E2MDkwM2ZhMWI4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0NWZmNGQyMDJkOWNiODlhODgwMmI5Y2E3NzZmMmYwMTJkNDU4MWU4NDczOWNlN2JiYjQzZmJjNWFmYjRkOWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d398004a41f045759327c41e3880cbd5",
+      "statement": "Two agent instances exist: RO_AGENT (read-only, no sandbox) for local use, and a per-request agent created in get_agent() with a LangSmith sandbox backend for remote execution.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L77-L88",
+          "version": "repo-lines-v1:sha256:029d9d1ca033ce9234d118473a0101525bf19621d73a2b650b39d26819da2149:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZDg3ZDlmMDc5YTk4ZDczNDc4ZWY3MmNjZjdiOWYzMTg0MTU1MzdhNDQ3ZjJkZDhmOGU0OGRlMjQ1MWY4NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzMzA5NzZmZWQzYzM3NzRkNjhiMzU3NWI1OTkxOGUwNzU1YzkxYzc2MzEwNWE2ZGNkZWUwYWU5NGRiYWRiNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_22e162ce07ab4c8c9105de2c10a33539",
+      "statement": "Human-in-the-loop interrupts are enabled on execute and write_file actions, requiring approval before the agent performs those operations.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L71-L71",
+          "version": "repo-lines-v1:sha256:4eee84925fe1f34c4dcc24525e3e5b1c409b0a5c5375a2cac3f0a1a58d3a0a26:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGVlZTg0OTI1ZmUxZjM0YzRkY2MyNDUyNWUzZTViMWM0MDliMGE1YzUzNzVhMmNhYzNmMGExYTU4ZDNhMGEyNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGVlZTg0OTI1ZmUxZjM0YzRkY2MyNDUyNWUzZTViMWM0MDliMGE1YzUzNzVhMmNhYzNmMGExYTU4ZDNhMGEyNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGViY2RkZDdlZjBlYTYwNzFjMzZlYzJmYmI3ZTE0OWE1YWZmZTk5NWNjN2RmYzlkZjEzOTE2ODJjOTQ0YmEwMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWNiMWQxNTU1MGQyNTRjOTc0ODQxYjNiZGI0NDgyMmFkMTBmMzQ0ZjVhOWQzZDY3OWViMGQwNDViNjYwNzJiNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_25f4e140f9c64c6aa81642f39b1d6586",
+      "statement": "The researcher subagent is dedicated to evidence collection and source-grounded fact finding; the critic subagent performs adversarial review of drafts and plans.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L42-L61",
+          "version": "repo-lines-v1:sha256:4cf44a2abe55cecb6d9c538ca877f538446c998228c3586b0a9b7084695fc158:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkNWYzYzZhYzdkYjMzMWNjODMwY2UwODY0OTNmMTRmZmU3MTAyYWJjZmJjM2JmMjk1OTY1MzAzZGE4OTM5ZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkZWY1MzNlYzNmNWIwYjM4YTkxNDNhM2ZhNmU2ZTJhY2Q4M2ZhMzc5M2U2NTg4NzhlMjQxYWE1N2NmYThmZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3NWNiMjMxZWYxNDQ1YmUyMjljNmFlYTZkNTFlZDlmNTdhNTlmYTBlYWNiYWI4ZDI4ZDVmMDA4OWIxYWZkYWUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-06T06:03:50.304Z"
+  }
+}

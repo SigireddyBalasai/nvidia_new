@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:92d7c44505b36e49631c12ff838e42be690cfc628ffcb6cbabafe990bb672668",
+  "claims": [
+    {
+      "id": "claim_c340cee0764d463da5387a2da1de1c64",
+      "statement": "langgraph.json registers the agent graph as 'agent' pointing to deep_agent.graph:get_agent, uses wolfi as the container image distro, and includes the root package as a dependency.",
+      "evidence": [
+        {
+          "resource": "repo://langgraph.json#L1-L9",
+          "version": "repo-lines-v1:sha256:b720817d88e6df87b89c20e07ea9d0e1024d852e8189a6a02dc02b1222c4eab7:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZmYjA4ZmRhMWFjYjk1N2I2MTE2YmQzNzgxMWExZmU0MWEwMTYxMWMwNjMxZWRiZjc4NmQ2ODg5YTI3YTU1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2f09fc1b79e740dc88e1132c2044a509",
+      "statement": "The Makefile provides targets for install, dev, serve, test, integration-tests, lint, and format using uv and pytest.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile#L1-L32",
+          "version": "repo-lines-v1:sha256:3296afd04de97d1b7a4727a9944ed5fffd6266c14a797beeb9a675fa9226e026:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3Y2FhNzQ3YjA0YzhiOTUyYjQyYjA5ZWJlMTFjMDY2MDdhOWUyYWMzODg1MDZiNGM4MWJjY2VlODAyNGEyM2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwNjhmZTAyMzcxYTEwYjYzNWQ0NmZhMTM3OTk4NDVlNGFkMTlmN2UyN2Y2MDBlZDg0N2JjNDYzNGM4MTBmNGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2f3d99381aff43cbbf4e6f07310d5aed",
+      "statement": "The OpenWiki GitHub Actions workflow runs daily at 08:00 UTC, installs OpenWiki with mermaid/jsdom, runs openwiki code --update, and creates a PR with documentation changes using required secrets OPENAI_API_KEY and OPENWIKI_LANGSMITH_API_KEY.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/openwiki-update.yml#L1-L77",
+          "version": "repo-lines-v1:sha256:47021ef814a0b75b9ab3415d0f47ccda97e81c6cf5226d5cdd7cb3a76f93f3a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MDI3ODdhZjZkY2MwODM0ZGUxMjFjYmIxY2I5NWY5NDU5YjcyMWVhYjAzNDlmMTA1MDFiOTk2YzFjNzdmZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2NzE4ZjA2N2I1ZTVjMWYwOTkxYTZlNzQ3MjZmZTJhMjNkMjY0MzQ1ZTA4ZTRlYWQwNGZhZjczYzI3ZWQ0NDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-06T06:03:50.304Z"
+  }
+}

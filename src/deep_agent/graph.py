@@ -15,7 +15,7 @@ from copilotkit import CopilotKitMiddleware
 
 from deep_agent.sandbox import get_or_create_sandbox
 
-DEFAULT_MODEL = os.getenv("DEEP_AGENT_MODEL", "anthropic:claude-sonnet-4-6")
+DEFAULT_MODEL = os.getenv("DEEP_AGENT_MODEL", "nvidia:nemotron-3-super-120b-a12b")
 
 SYSTEM_PROMPT = """
 You are a deep agent.

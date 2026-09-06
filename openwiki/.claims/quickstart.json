@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:41b2c506e2325af14125919e7e1027906f10242aa838b8138d4f0f86d2229103",
+  "claims": [
+    {
+      "id": "claim_356f1aa6adb04d93833c180f74cfc4f2",
+      "statement": "The Makefile provides make serve for LangGraph dev server, make test for unit tests, make integration-tests for integration tests, make lint for Ruff checks, and make format for Ruff formatting.",
+      "evidence": [
+        {
+          "resource": "repo://Makefile#L1-L32",
+          "version": "repo-lines-v1:sha256:3296afd04de97d1b7a4727a9944ed5fffd6266c14a797beeb9a675fa9226e026:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3Y2FhNzQ3YjA0YzhiOTUyYjQyYjA5ZWJlMTFjMDY2MDdhOWUyYWMzODg1MDZiNGM4MWJjY2VlODAyNGEyM2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwNjhmZTAyMzcxYTEwYjYzNWQ0NmZhMTM3OTk4NDVlNGFkMTlmN2UyN2Y2MDBlZDg0N2JjNDYzNGM4MTBmNGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3ee4945f02a44faf9d099f964abdf4b4",
+      "statement": "Setup requires copying .env.example to .env and configuring API keys for the chosen model provider (NVIDIA, Anthropic, or OpenAI) and optionally LANGSMITH_API_KEY for tracing.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example#L1-L16",
+          "version": "repo-lines-v1:sha256:78e305547ee609da5c85aa8025c7d128537db52966891eb743457c8c9ab1ef74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhNDMwZmUxZDhlNTk3NTI3Mjg3ZTQzYjlkZjczZTZiMTYwZTMyYjYyN2NhYWYwZGQwMGNjMmFlM2E2NzYxMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYjY5MjViY2Y3ZDAyZGIzNjAzYzllYmViMTM5NGQwZTllNGUwNTgzMzU3NGEyMDZiYzMyMTViYzE5MmY4NDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-06T06:03:50.304Z"
+  }
+}

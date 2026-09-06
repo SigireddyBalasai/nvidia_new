@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:dc91803f3d551257f9836e477e634c45d5f5292ad63f759542da8bfcc58737b8",
+  "claims": [
+    {
+      "id": "claim_0916b088c52647a7a473d0ef4f6555d5",
+      "statement": "Unit tests verify that the graph compiles to a Pregel instance, SUBAGENTS contains exactly researcher and critic, and SYSTEM_PROMPT is non-empty.",
+      "evidence": [
+        {
+          "resource": "repo://tests/unit_tests/test_configuration.py#L1-L16",
+          "version": "repo-lines-v1:sha256:49f065fde4572bd6ec43a3de9f3da69f7d861fee27ffa1771a0157ca32011547:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0N2JjMmUzZGVkNTdhMDIyNDJmMjcwMmQ4ZGJjZDEwMTM1OTA1MTdmNzY3ZWM4OTRmOTAwY2EyYjJmMjFiMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2NzI5ZTQ0NGUxMmM5OTAyOTFjZWRhYWQwMjA3MTVhYTVjNjEwY2E3M2NjYjczNWI0YjMwNGUzMmIxZjhjYjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d5b864dba08f45f7aae0ac88b5356508",
+      "statement": "Integration tests are skipped unless ANTHROPIC_API_KEY is set, then perform a smoke test by invoking the graph with a simple message.",
+      "evidence": [
+        {
+          "resource": "repo://tests/integration_tests/test_graph.py#L9-L10",
+          "version": "repo-lines-v1:sha256:c254dbd1b95e657dd4cbc77daf7c1114eb9e5bee7de5a6570aa3e502f071a126:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjMwYzhlNmY3MjE3MzIyYzgyYTE2YTFiYjU3YTA0M2VmYjg3NjIzYThiOTI1MWYzZGEyOGJhYmIxZDlmZjY0OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWE4NjNiMTc4YmRlOThkYTA4NjVlNDVkMjUxODJlZjFhODE3MTk2NTIwMGMxN2I1YWIxZWE0NDY2MWI1OTUxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmUxZTRkMGZkNWMzNWQxNWQ1NjUzMGY1MTU0MWE3YjdiNTc0ZTA1MjRmNThjMDZkNTllN2NjOThmMjRhMGRjNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDUwZTkyNmRiZWVmNDc2ZjY2NTM5YmIxNDYwZjE1MTg4Mzg5NWM3ZDMyNDAzZGE2MDU2YTlkYTI3YTZjZmM3NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_82fc6e9ddf0f4e79aa1632f9b944d8e2",
+      "statement": "The conftest.py provides a session-scoped anyio_backend fixture returning 'asyncio' for async test execution.",
+      "evidence": [
+        {
+          "resource": "repo://tests/conftest.py#L1-L6",
+          "version": "repo-lines-v1:sha256:0676a8cf62e33f397f9f3b30d6cd4073a25f6ecf479b660b98b36f10499f5aa5:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc1YTgzMDJjNjIxOTA3NDZjZDhmYzIyOWM2MTg2ZjExZmI1MzE0MjE4YjIwZDFiNzQyOTIwMzAxYTQ5NWI3NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWZjY2JkMjg3YTM1MWY4N2U2MzEzZGI4NDk5ZWIyNDc0MWU2ZWQ0OWM5MjNlOTQ1NWJlOTZkNGY1NDcyZmVlMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-06T06:03:50.304Z"
+  }
+}

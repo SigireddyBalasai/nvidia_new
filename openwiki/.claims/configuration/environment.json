@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8f207bfdaddd673e8f21d83946ad1bdc4708edb33a54280d27338e09641a3383",
+  "claims": [
+    {
+      "id": "claim_82b8000bef054073b6f8d936fb4eb5db",
+      "statement": "Environment variables control model selection (DEEP_AGENT_MODEL), API keys (NVIDIA_API_KEY, ANTHROPIC_API_KEY, LANGSMITH_API_KEY), and sandbox settings (SANDBOX_TEMPLATE_NAME, SANDBOX_TEMPLATE_IMAGE).",
+      "evidence": [
+        {
+          "resource": "repo://.env.example#L1-L16",
+          "version": "repo-lines-v1:sha256:78e305547ee609da5c85aa8025c7d128537db52966891eb743457c8c9ab1ef74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhNDMwZmUxZDhlNTk3NTI3Mjg3ZTQzYjlkZjczZTZiMTYwZTMyYjYyN2NhYWYwZGQwMGNjMmFlM2E2NzYxMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYjY5MjViY2Y3ZDAyZGIzNjAzYzllYmViMTM5NGQwZTllNGUwNTgzMzU3NGEyMDZiYzMyMTViYzE5MmY4NDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cf173a1c17ce4a5986fbd1456e81d65f",
+      "statement": "DEEP_AGENT_MODEL defaults to nvidia:nemotron-3-super-120b-a12b and supports provider:model-name format for nvidia, anthropic, and openai providers.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L18-L18",
+          "version": "repo-lines-v1:sha256:5bd3e4aa28ac0329673467ce6ccc25154a6e08fefd03124717fb8dd3fdc80790:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWJkM2U0YWEyOGFjMDMyOTY3MzQ2N2NlNmNjYzI1MTU0YTZlMDhmZWZkMDMxMjQ3MTdmYjhkZDNmZGM4MDc5MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWJkM2U0YWEyOGFjMDMyOTY3MzQ2N2NlNmNjYzI1MTU0YTZlMDhmZWZkMDMxMjQ3MTdmYjhkZDNmZGM4MDc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA5MzRlNWI4MzNhZDkxY2I0MjA0NWE4NWZjNjQwMmRlY2VlMGE5OTVhMWRiZjUwMjZlNjQyZGU2MDE4OWJkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTlhZmZkNWU2YTQxZjVmMTIxZTgxMWY5ODRlODc1ZjM5ZmI5MzkyMjJhNzgyZTVlMzdhODUzMzdkNTk2OWE4YyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-06T06:03:50.304Z"
+  }
+}
