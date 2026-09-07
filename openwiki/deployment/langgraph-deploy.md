@@ -1,19 +1,23 @@
 ---
 type: operations
 title: Deployment & DevOps
-description: How to deploy the agent to LangSmith and run locally — langgraph.json config, CLI commands, and GitHub Actions.
+description: How to deploy the agent to LangGraph and run locally — langgraph.json config, CLI commands, and GitHub Actions.
 tags: [deployment, langgraph, devops, ci-cd]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-06T06:03:50.304Z
+    at: 2026-09-07T00:23:46.719Z
 sources:
+  - id: openwiki-source-5f5b95b3d6a215fa02ceb945
+    resource: repo://.env.example
   - id: openwiki-source-6d4b4e707b8d60b6ccfa3425
     resource: repo://.github/workflows/openwiki-update.yml
   - id: openwiki-source-5bbba7b2a8ea8360ff233d63
     resource: repo://langgraph.json
   - id: openwiki-source-012f2c78e3b1446dfc35803f
     resource: repo://Makefile
-generated: { by: "opencode", at: "2026-09-06T06:03:50.304Z" }
+  - id: openwiki-source-05ccef8d4cf1698187f20464
+    resource: repo://pyproject.toml
+generated: { by: "opencode", at: "2026-09-07T00:23:46.719Z" }
 ---
 
 # Deployment & DevOps
@@ -26,7 +30,7 @@ generated: { by: "opencode", at: "2026-09-06T06:03:50.304Z" }
 uv run langgraph dev
 ```
 
-Starts a local LangGraph development server (default port 8123) that serves the agent graph for testing.
+Starts a local LangGraph development server (default port 36007) that serves the agent graph for testing.
 
 ### Frontend Dev Server
 
@@ -59,13 +63,13 @@ Starts the TanStack Start frontend on port 3000 with Vite HMR.
 | `lint` | `uv run python -m ruff check src tests` | Ruff lint checks |
 | `format` | `uv run python -m ruff format src tests` | Ruff auto-format |
 
-## Deployment to LangSmith
+## Deployment to LangGraph
 
 ```bash
 uv run langgraph deploy
 ```
 
-Requires a LangSmith account (Plus plan or higher). Alternatively, push to GitHub and configure deployment through the LangSmith UI for CI-based deployments.
+Requires a LangSmith account (Plus plan or higher). Alternatively, push to GitHub and configure deployment through the LangGraph UI for CI-based deployments.
 
 ## GitHub Actions — OpenWiki Workflow
 

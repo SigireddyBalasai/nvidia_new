@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:672c959f98da28cb5461561dd6950a8b58521185e38ed92f4098172ae1aafa3f",
+  "pageVersion": "sha256:3e286e40903e8da305732b19e3012e09cd87379dde3b25cf6d6a829e41545b43",
   "claims": [
     {
       "id": "claim_d5a234d12c0c470dac3696b77a955751",
@@ -9,16 +9,6 @@
         {
           "resource": "repo://src/deep_agent/graph.py#L64-L74",
           "version": "repo-lines-v1:sha256:18045d0372fd15a2b853a6a4e3de6ffbce293974fbd32d3aa2537a0eff103126:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjODUxZWRlOTNhYjNlNWJmODM1YjYzNDcxYTQ5N2M3YmI4YTA3Y2JiZDM5OWY4ZTk1NzMzOGQwODZhZDg0ODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzZDE3MWRlNzU0MzFhMDIxYTBkOTRmYTc2ZmFiZjBkNzEzOWM4OThjMWEwYjQ0YjQzY2E2MDkwM2ZhMWI4NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0NWZmNGQyMDJkOWNiODlhODgwMmI5Y2E3NzZmMmYwMTJkNDU4MWU4NDczOWNlN2JiYjQzZmJjNWFmYjRkOWUifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_d398004a41f045759327c41e3880cbd5",
-      "statement": "Two agent instances exist: RO_AGENT (read-only, no sandbox) for local use, and a per-request agent created in get_agent() with a LangSmith sandbox backend for remote execution.",
-      "evidence": [
-        {
-          "resource": "repo://src/deep_agent/graph.py#L77-L88",
-          "version": "repo-lines-v1:sha256:029d9d1ca033ce9234d118473a0101525bf19621d73a2b650b39d26819da2149:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZDg3ZDlmMDc5YTk4ZDczNDc4ZWY3MmNjZjdiOWYzMTg0MTU1MzdhNDQ3ZjJkZDhmOGU0OGRlMjQ1MWY4NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzMzA5NzZmZWQzYzM3NzRkNjhiMzU3NWI1OTkxOGUwNzU1YzkxYzc2MzEwNWE2ZGNkZWUwYWU5NGRiYWRiNzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -41,10 +31,50 @@
           "version": "repo-lines-v1:sha256:4cf44a2abe55cecb6d9c538ca877f538446c998228c3586b0a9b7084695fc158:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkNWYzYzZhYzdkYjMzMWNjODMwY2UwODY0OTNmMTRmZmU3MTAyYWJjZmJjM2JmMjk1OTY1MzAzZGE4OTM5ZmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NDE2ZTA5Zjc4YmEzMTZjMDMyNTY4MjEzYjg1NWVlNzU2ZTQxNTY1ZDkxOGYwOTUxOWM4MWZkNjIwZjQwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkZWY1MzNlYzNmNWIwYjM4YTkxNDNhM2ZhNmU2ZTJhY2Q4M2ZhMzc5M2U2NTg4NzhlMjQxYWE1N2NmYThmZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3NWNiMjMxZWYxNDQ1YmUyMjljNmFlYTZkNTFlZDlmNTdhNTlmYTBlYWNiYWI4ZDI4ZDVmMDA4OWIxYWZkYWUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_62a75519d4844d7f819aed69b5692208",
+      "statement": "Two agent instances exist: RO_AGENT (read-only, no sandbox) for local development, and a per-request agent created in get_agent() with a Podman container sandbox backend for remote execution.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L77-L88",
+          "version": "repo-lines-v1:sha256:74201d8f1e24cfcd42baf300223b36838e8d88181a06f61bb2d77e05b9b5e8d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzZDg3ZDlmMDc5YTk4ZDczNDc4ZWY3MmNjZjdiOWYzMTg0MTU1MzdhNDQ3ZjJkZDhmOGU0OGRlMjQ1MWY4NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5YzcxNDk3Y2ZjODJlNmZlMGZmZmYwYjA2MjM2NWVmNDk3MTUzODhhNjU0N2I5N2ExMzAwZjdlZWEyOGYwMmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYzRhN2QxY2M3OTZhYmEzZTQ2NzIzMzI3ZjUxN2U5ZjgxMTk4MmQyNTBmMDcwMjk4NmU0YjU3NjRhZDk1ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzMzA5NzZmZWQzYzM3NzRkNjhiMzU3NWI1OTkxOGUwNzU1YzkxYzc2MzEwNWE2ZGNkZWUwYWU5NGRiYWRiNzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_604c0503a4e448b597ce060a10855593",
+      "statement": "The deep agent graph is constructed via create_deep_agent() from the deepagents library with model nvidia:nemotron-3-super-120b-a12b, configurable via DEEP_AGENT_MODEL env var.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L18-L74",
+          "version": "repo-lines-v1:sha256:2f3f0d64f7ed79eb34c9c552c6fb3a845e0363368209f3461a8735ee406f2d50:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViZDNlNGFhMjhhYzAzMjk2NzM0NjdjZTZjY2MyNTE1NGE2ZTA4ZmVmZDAzMTI0NzE3ZmI4ZGQzZmRjODA3OTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYzFmMTg4ZjE0MmVkN2E4MjQ2ODBiMjA3MTcyYzU1MTliYzYxNGE0OGZkYTdjZjE2N2VkYjhkZGY3OTk1NmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwOTM0ZTViODMzYWQ5MWNiNDIwNDVhODVmYzY0MDJkZWNlZTBhOTk1YTFkYmY1MDI2ZTY0MmRlNjAxODliZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0NWZmNGQyMDJkOWNiODlhODgwMmI5Y2E3NzZmMmYwMTJkNDU4MWU4NDczOWNlN2JiYjQzZmJjNWFmYjRkOWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a4f20d5a08994647a124219f03c86eea",
+      "statement": "get_agent(config, runtime) is an async context manager that extracts thread_id from config, creates or retrieves a cached PodmanBackend sandbox via get_or_create_sandbox(), and yields an agent with that backend.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L80-L88",
+          "version": "repo-lines-v1:sha256:c453b534c51362ccdd9ee5d006887f09cd5531978f455943c531adfd92714100:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDY5MDA5ZjRjOTM5ZjNkZjg4ODgzNDg0NDQzMmNlM2IxYjkxNDM2MTkzNGNhYzU2YzdlNTU2MmRhZTEyMmRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTljNzE0OTdjZmM4MmU2ZmUwZmZmZjBiMDYyMzY1ZWY0OTcxNTM4OGE2NTQ3Yjk3YTEzMDBmN2VlYTI4ZjAyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjY2NGJkODEyYTliOTVkNThmYmU5NWM0OWQwMjUwYjBjZjZhNjY4ZGI3ZTY5ZWQ0YjRhNmIyNTRlYzdlM2NlMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzMzMDk3NmZlZDNjMzc3NGQ2OGIzNTc1YjU5OTE4ZTA3NTVjOTFjNzYzMTA1YTZkY2RlZTBhZTk0ZGJhZGI3NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a6e3c4d557a84d30b5db0375a59d4b37",
+      "statement": "CopilotKitMiddleware from copilotkit is included in the agent's middleware stack to enable frontend integration.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L73-L73",
+          "version": "repo-lines-v1:sha256:00b84999f94b859e153194c1faaaa53d36e7810fbe56c46239aba5d33e586fb9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBiODQ5OTlmOTRiODU5ZTE1MzE5NGMxZmFhYWE1M2QzNmU3ODEwZmJlNTZjNDYyMzlhYmE1ZDMzZTU4NmZiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBiODQ5OTlmOTRiODU5ZTE1MzE5NGMxZmFhYWE1M2QzNmU3ODEwZmJlNTZjNDYyMzlhYmE1ZDMzZTU4NmZiOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWZmYmEzNmIxNzhiMDU3NzdmN2RmMTE1MGI1NjkzOThkYTg4MGNkMDVkNzk5M2FmNDM0NDFlOTU2MGJkMTc5MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNjNGE3ZDFjYzc5NmFiYTNlNDY3MjMzMjdmNTE3ZTlmODExOTgyZDI1MGYwNzAyOTg2ZTRiNTc2NGFkOTU4OSJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-06T06:03:50.304Z"
+    "at": "2026-09-07T00:23:46.719Z"
   }
 }

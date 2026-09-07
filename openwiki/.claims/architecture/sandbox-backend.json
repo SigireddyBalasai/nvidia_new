@@ -1,40 +1,40 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b6e8f7fff22d4526c65561be2ca351f7f83ed4fa8e31f59e46ca766d2d92ca8f",
+  "pageVersion": "sha256:377f7beb6b7c60994373011605ff22f95db06d2c4eefdf177b270e03ac252caf",
   "claims": [
     {
-      "id": "claim_1d8f4db05548492096d5a3d486924163",
-      "statement": "LangSmithBackend extends BaseSandbox and wraps an AsyncSandbox from the LangSmith SDK, implementing only async methods since the framework always calls async versions.",
+      "id": "claim_749fe1f3eab1482ebb3d56712b873cac",
+      "statement": "PodmanBackend extends BaseSandbox from deepagents.backends.protocol and wraps a Podman container via the Podman Python SDK, executing commands via container.exec_run() and transferring files via put_archive/get_archive.",
       "evidence": [
         {
-          "resource": "repo://src/deep_agent/sandbox.py#L25-L35",
-          "version": "repo-lines-v1:sha256:52edca475eb0e601450dfe55f50444f033c1d45e11564f51e4ea052452b038d9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1ZmRmZmYwYmMyY2M3MjMzMjhlNjdiYjgxOTViN2ZkMTkyNTFiNTg4NTNlMjIxMTFmYmMwY2UxOGI0ODI0YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0ODVmZGJhNjI3NjI3MTU1M2Q2YjRiNzc2ZTAyMjM3ZWFiZjYwMGMzNDIzMjE0YjFhODViYTQ4NjljOTUyZWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhYTQ3MmFlNjFiMDJlZWYyZDVmMzA0OTZhMWJmZDMzM2VkYTE0MWVjZWViZDJjMmUyZmRkNjg1NzMxN2ZkYWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjNGRmODc1OWRhZTQwZjIyZjA5MmM4MGE3ODA0OGU3MzY2NjQzZGRjN2I3NWRmMGZhZTY5MDQ2ZjFlYTExM2UifQ"
+          "resource": "repo://src/deep_agent/sandbox.py#L49-L49",
+          "version": "repo-lines-v1:sha256:a7566fbc90711684e85a7be6bc33371c174e7740b973eb32e473e75a1bf819ad:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTc1NjZmYmM5MDcxMTY4NGU4NWE3YmU2YmMzMzM3MWMxNzRlNzc0MGI5NzNlYjMyZTQ3M2U3NWExYmY4MTlhZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTc1NjZmYmM5MDcxMTY4NGU4NWE3YmU2YmMzMzM3MWMxNzRlNzc0MGI5NzNlYjMyZTQ3M2U3NWExYmY4MTlhZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmEyOGYzMDQwZGZiZWI2OGNjOTQ2MDg0N2I4NWRiNTlkM2UwYWQ3MDk3OTk3MWE3MzRjNDk1YTIxMGI5ZWI3ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTZmZTI2NGJmZWZmMDYwYTJhNTk3MGZkZTdjYzNhN2Y0NzM3MzQ5Nzc0MjIzNGNlZDQyYzI1MmQ0NzMwMWE5MSJ9"
         }
       ]
     },
     {
-      "id": "claim_f698f3ed5dfb43d896c5e81ddb6bafca",
-      "statement": "get_or_create_sandbox caches sandbox instances per thread_id in an in-memory dict, creating new sandboxes only when no cached instance exists for the thread.",
+      "id": "claim_a69a9ce0a1f94a5d805ecccdb185a283",
+      "statement": "get_or_create_sandbox caches PodmanBackend instances per thread_id in an in-memory dict, creating new containers via PodmanClient on the default socket unix:///run/user/1000/podman/podman.sock with python:3.11-slim image when no cached instance exists.",
       "evidence": [
         {
-          "resource": "repo://src/deep_agent/sandbox.py#L93-L110",
-          "version": "repo-lines-v1:sha256:83698352d6b420891d1ef633ce27ed567f79292e3c2ae1fe9f75a1422903326e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlZWFiMjM1MjA4NWUwOTdhM2E1YzIzYTkxYTgzOTk4ODM3YzZjZDFhMmY5MDc3NzE3NjIxNzMwYzQ4NjMxYmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiMjcyZDM0N2I3MTEzNjVhZTY4MjdhMzhlNTk1ZmZhZTg2ODllMGUwZTI4NmRlNjY1MmZhZjM3OGIyZTAyYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlZjVjODFkMmU4YzU2YmQzODFmZDg0NmUzMTQzYzY1NWRlMWIwYWI3MDgwMTMzZDgxYzA1N2IyNGQzMzk4MGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwNjkyYjUyYTJmNTgyMWQ1ZmIzMDcxZmNhY2ZmNjdjNmUwZjg5NzI0Mjg5YWY1MzIxMzg0YjJlYzE5OGUzOTQifQ"
+          "resource": "repo://src/deep_agent/sandbox.py#L226-L226",
+          "version": "repo-lines-v1:sha256:c644e9745b041e92bb365e0d2174c6649f5ca18d7556e2dc53d5bdc9e6d30a65:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzY0NGU5NzQ1YjA0MWU5MmJiMzY1ZTBkMjE3NGM2NjQ5ZjVjYTE4ZDc1NTZlMmRjNTNkNWJkYzllNmQzMGE2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzY0NGU5NzQ1YjA0MWU5MmJiMzY1ZTBkMjE3NGM2NjQ5ZjVjYTE4ZDc1NTZlMmRjNTNkNWJkYzllNmQzMGE2NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDVlZDA3MGRmNTNkZDRkNTMyNWQ3ZDBjMTM2YjBkZGUzOWZmZGQwNDBkODlkZTQwNjI5NjdjMjVkNzlkNWFlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDg0YjA0YzVhZjdiYWM1N2VjNjM2ZjZjN2NmNjRlNGY4M2E1NjFkOTVhNDcyYTQzN2M1MGI5NTI4MDg4NDAxNSJ9"
         }
       ]
     },
     {
-      "id": "claim_9e0d931879aa4c4ebfbf0fc66d349356",
-      "statement": "_ensure_template creates the LangSmith sandbox template (default: deep-agent with python:3 image) if it does not already exist, using configurable env vars SANDBOX_TEMPLATE_NAME and SANDBOX_TEMPLATE_IMAGE.",
+      "id": "claim_20c9cf44cb254644a474d6e9df489e77",
+      "statement": "The Podman container lifecycle includes automatic cleanup via weakref.finalize on garbage collection, and explicit cleanup via cleanup_sandbox(thread_id).",
       "evidence": [
         {
-          "resource": "repo://src/deep_agent/sandbox.py#L113-L124",
-          "version": "repo-lines-v1:sha256:9a314bf045bd6910acb96f3b1446b80f2ec9a04030c792b577aa9eb5a982a74d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NjhmZTBmMTdkM2U4MzMyZTRjMTBiOGM2NDFiMDliMTQ4ZDVmMjk0ZDMyZmNjYmFkZTQ4YWUyOWFkNjYzODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMzQ1ZTg3MmE0MTExM2Q1OGYwMDk4MTUxOGNiZjA4NDYwMWRjNmE5YWMyZjc5OTg0YmU0YTEyY2RlMjBiYWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxNWY2YWE3OTAyMzE4MmE2NzYzNDRhMmQ5YmZhNDdkNDk5MjViY2M1OTYwYThlOGE5NGQxMjE0ZWY4N2UyZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://src/deep_agent/sandbox.py#L69-L69",
+          "version": "repo-lines-v1:sha256:8e4524b917814b261fce8d1976e1ca06c65cb5db04f47dc507360d8abee2fb0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGU0NTI0YjkxNzgxNGIyNjFmY2U4ZDE5NzZlMWNhMDZjNjVjYjVkYjA0ZjQ3ZGM1MDczNjBkOGFiZWUyZmIwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGU0NTI0YjkxNzgxNGIyNjFmY2U4ZDE5NzZlMWNhMDZjNjVjYjVkYjA0ZjQ3ZGM1MDczNjBkOGFiZWUyZmIwZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGIxM2JjZWE4NWJkZTU1N2YwNWE3NDdjOWIyMjI1ZWY4ZmE1OWVkYTlhMGU5YjRjYjQ4ZWVlYzc5NzhiMmUyZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGNkMzkwNTAwNDQxM2Q2YTNiZjA3Y2JkYjhmYmVjZGY0YTQ3ZDc0NGVjYWI1Mzc1ZWI4MzgzYzRjNjMzZTBmZiJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-06T06:03:50.304Z"
+    "at": "2026-09-07T00:23:46.719Z"
   }
 }

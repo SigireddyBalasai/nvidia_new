@@ -5,13 +5,15 @@ description: Task-routing map for navigating the wiki; setup, development, and d
 tags: [quickstart, setup, getting-started]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-06T06:03:50.304Z
+    at: 2026-09-07T00:23:46.719Z
 sources:
   - id: openwiki-source-5f5b95b3d6a215fa02ceb945
     resource: repo://.env.example
   - id: openwiki-source-012f2c78e3b1446dfc35803f
     resource: repo://Makefile
-generated: { by: "opencode", at: "2026-09-06T06:03:50.304Z" }
+  - id: openwiki-source-05ccef8d4cf1698187f20464
+    resource: repo://pyproject.toml
+generated: { by: "opencode", at: "2026-09-07T00:23:46.719Z" }
 ---
 
 # Quickstart Guide
@@ -21,7 +23,7 @@ generated: { by: "opencode", at: "2026-09-06T06:03:50.304Z" }
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) package manager
 - An API key for your model provider (NVIDIA, Anthropic, or OpenAI)
-- A [LangSmith](https://smith.langchain.com/) account (Plus plan+) for deployment
+- [Podman](https://podman.io/) installed and running (for sandbox execution)
 
 ## Setup
 
@@ -42,7 +44,7 @@ cp .env.example .env
 ### Backend (Agent)
 
 ```bash
-# Start LangGraph dev server (port 8123)
+# Start LangGraph dev server (port 36007)
 make serve
 
 # Run unit tests
@@ -67,10 +69,10 @@ bun run dev    # starts on port 3000
 ## Deployment
 
 ```bash
-# Deploy to LangSmith
+# Deploy to LangGraph
 uv run langgraph deploy
 
-# Or push to GitHub and configure via LangSmith UI
+# Or push to GitHub and configure via LangGraph UI
 ```
 
 ## Wiki Navigation
@@ -78,7 +80,7 @@ uv run langgraph deploy
 | Topic | Page |
 |-------|------|
 | Agent architecture | [Agent Graph Architecture](/openwiki/architecture/agent-graph.md) |
-| Remote execution | [LangSmith Sandbox Backend](/openwiki/architecture/sandbox-backend.md) |
+| Remote execution | [Podman Sandbox Backend](/openwiki/architecture/sandbox-backend.md) |
 | Frontend-backend bridge | [CopilotKit Integration](/openwiki/architecture/copilotkit-integration.md) |
 | React chat UI | [Frontend Architecture](/openwiki/frontend/overview.md) |
 | Environment variables | [Configuration & Environment](/openwiki/configuration/environment.md) |

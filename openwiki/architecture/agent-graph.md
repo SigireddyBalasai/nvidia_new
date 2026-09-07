@@ -3,13 +3,13 @@ type: architecture
 title: Agent Graph Architecture
 description: How the deep agent graph is built, configured, and invoked — model selection, system prompt, subagents, tools, and interrupt behavior.
 tags: [agent-graph, langgraph, deepagents, subagents]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-06T06:03:50.304Z
 sources:
   - id: openwiki-source-9a767df0c13e1dad1416d3b9
     resource: repo://src/deep_agent/graph.py
-generated: { by: "opencode", at: "2026-09-06T06:03:50.304Z" }
+generated: { by: "opencode", at: "2026-09-07T00:23:46.719Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-07T00:23:46.719Z
 ---
 
 # Agent Graph Architecture
@@ -30,7 +30,7 @@ The core of this template is a LangGraph agent constructed via `create_deep_agen
 Two agent instances exist:
 
 1. `RO_AGENT` — a read-only agent without a sandbox backend, used when no execution runtime is available
-2. A per-request agent — created in `get_agent()` with a LangSmith sandbox backend when an execution runtime is present
+2. A per-request agent — created in `get_agent()` with a PodmanBackend sandbox when an execution runtime is present
 
 ## Subagents
 
@@ -46,7 +46,7 @@ Both subagents receive focused system prompts emphasizing their specific role (c
 `get_agent(config, runtime)` is an async context manager that:
 
 1. Checks if the runtime provides an execution runtime (`ert`)
-2. If present: extracts `thread_id` from config, creates or retrieves a cached `LangSmithBackend` sandbox, builds an agent with that backend
+2. If present: extracts `thread_id` from config, creates or retrieves a cached `PodmanBackend` sandbox, builds an agent with that backend
 3. If absent: yields the read-only `RO_AGENT` without sandbox capabilities
 
 This two-tier design enables local development without sandbox overhead while supporting remote execution in production.

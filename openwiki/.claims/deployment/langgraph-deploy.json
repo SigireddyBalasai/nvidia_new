@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:92d7c44505b36e49631c12ff838e42be690cfc628ffcb6cbabafe990bb672668",
+  "pageVersion": "sha256:afe1442e52eca7e973d8fb1cf1dced68651860a05200291f158466c3810d9ec8",
   "claims": [
     {
       "id": "claim_c340cee0764d463da5387a2da1de1c64",
@@ -31,10 +31,40 @@
           "version": "repo-lines-v1:sha256:47021ef814a0b75b9ab3415d0f47ccda97e81c6cf5226d5cdd7cb3a76f93f3a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MDI3ODdhZjZkY2MwODM0ZGUxMjFjYmIxY2I5NWY5NDU5YjcyMWVhYjAzNDlmMTA1MDFiOTk2YzFjNzdmZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2NzE4ZjA2N2I1ZTVjMWYwOTkxYTZlNzQ3MjZmZTJhMjNkMjY0MzQ1ZTA4ZTRlYWQwNGZhZjczYzI3ZWQ0NDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_0d78f01915fa446da0837e546027cace",
+      "statement": "The project uses `uv` for Python dependency management with `pyproject.toml` including `podman>=5.8.0` as a dependency for the container sandbox backend.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml#L7-L7",
+          "version": "repo-lines-v1:sha256:ad95f5e9ede01816043c0797ace8da2ac4e99a8a6a610fa98570ef34b9356109:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQ5NWY1ZTllZGUwMTgxNjA0M2MwNzk3YWNlOGRhMmFjNGU5OWE4YTZhNjEwZmE5ODU3MGVmMzRiOTM1NjEwOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWQ5NWY1ZTllZGUwMTgxNjA0M2MwNzk3YWNlOGRhMmFjNGU5OWE4YTZhNjEwZmE5ODU3MGVmMzRiOTM1NjEwOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODcwYTk2NmRkZWQyNWUyNjM3NDllNDY5MzM0NTllNmUzMDcwMWM4YWMxNzk2YjljZWNjMjM3ODFmZTA5YmNjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdkYmEwNWQyZDY0OWM3ZmQyZGNlMzlmNTc0OTY3ODBiODkxY2QxY2FiMDFmOWU3ZWI5OTcxNGFiMWNmMDM1NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_017431a2633040c2a79579740b419b29",
+      "statement": "langgraph.json maps the graph `agent` to `deep_agent.graph:get_agent` with `image_distro: wolfi` and `env: .env`.",
+      "evidence": [
+        {
+          "resource": "repo://langgraph.json",
+          "version": "repo-file-v1:sha256:b720817d88e6df87b89c20e07ea9d0e1024d852e8189a6a02dc02b1222c4eab7"
+        }
+      ]
+    },
+    {
+      "id": "claim_701a6f8797624d8baaf5cb42544885db",
+      "statement": "The .env.example file configures DEEP_AGENT_MODEL with nvidia:nemotron-3-super-120b-a12b as the default model and LANGSMITH_API_KEY for tracing.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example",
+          "version": "repo-file-v1:sha256:78e305547ee609da5c85aa8025c7d128537db52966891eb743457c8c9ab1ef74"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-06T06:03:50.304Z"
+    "at": "2026-09-07T00:23:46.719Z"
   }
 }

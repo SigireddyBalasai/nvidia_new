@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:41b2c506e2325af14125919e7e1027906f10242aa838b8138d4f0f86d2229103",
+  "pageVersion": "sha256:94521abc33ab7aa5d200081a51840ac3a30edee4517390b8e9d32b8e5235d20a",
   "claims": [
     {
       "id": "claim_356f1aa6adb04d93833c180f74cfc4f2",
@@ -21,10 +21,30 @@
           "version": "repo-lines-v1:sha256:78e305547ee609da5c85aa8025c7d128537db52966891eb743457c8c9ab1ef74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhNDMwZmUxZDhlNTk3NTI3Mjg3ZTQzYjlkZjczZTZiMTYwZTMyYjYyN2NhYWYwZGQwMGNjMmFlM2E2NzYxMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwYjY5MjViY2Y3ZDAyZGIzNjAzYzllYmViMTM5NGQwZTllNGUwNTgzMzU3NGEyMDZiYzMyMTViYzE5MmY4NDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_0a4cc160711d44e790ab6e66ae5418b3",
+      "statement": "Prerequisites include Python 3.11+, uv package manager, a model provider API key, a LangSmith account, and Podman for the container sandbox backend.",
+      "evidence": [
+        {
+          "resource": "repo://.env.example",
+          "version": "repo-file-v1:sha256:78e305547ee609da5c85aa8025c7d128537db52966891eb743457c8c9ab1ef74"
+        }
+      ]
+    },
+    {
+      "id": "claim_7b54b9b6253442a99fc6a0cfa44fd067",
+      "statement": "The project uses uv for Python dependency management with pyproject.toml, and bun for frontend package management with bun.lock.",
+      "evidence": [
+        {
+          "resource": "repo://pyproject.toml",
+          "version": "repo-file-v1:sha256:fd734ec6504dc6b948564f05a499a1a5d11cf5d99450a27a5bd6d270bc4d902a"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-06T06:03:50.304Z"
+    "at": "2026-09-07T00:23:46.719Z"
   }
 }

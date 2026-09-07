@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:41ae1cfb59aa96901e0db8df55bdf90ccbaa6ef6bdbeb8d73e30f3453bb92186",
+  "pageVersion": "sha256:9f38cd8533f2854eb7ae660121964eed48be957109377a666bba94bb061a0ec0",
   "claims": [
     {
       "id": "claim_d32967c7e30744fdb9bace1f5bedecdf",
@@ -13,28 +13,38 @@
       ]
     },
     {
-      "id": "claim_937568b467fc40eaa8263ef6f1143d7d",
-      "statement": "The CopilotRuntime API route connects to the LangGraph deployment via LangGraphAgent with graphId 'agent', uses LANGSMITH_API_KEY for auth, and registers an Excalidraw MCP server.",
+      "id": "claim_5f150d00919c472dae50dd9a23dd0449",
+      "statement": "The root layout wraps all children in <CopilotKit runtimeUrl='/api/copilotkit'> with an a2ui theme prop, enabling CopilotChat and other CopilotKit components to communicate with the agent backend.",
       "evidence": [
         {
-          "resource": "repo://frontend/src/routes/api/copilotkit.%24.ts#L12-L29",
-          "version": "repo-lines-v1:sha256:c66af34d8811c239755ff4f1eebc10e59e031673e0a4c636d953d6ef49f7e85a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4MTc2MzAyMDNjYzVmZGY0OGY5MWFkYTkyYzc2MmJmZDk0MWI1OGM5OTQ4YjA5YmYyYjExYmY4YmRmODkzMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQxMTkxMTQyYjg0MmM2ZjhlOTkxNGMxNmQxM2EyZjEyNTg1Nzg3N2QyM2Q4MTYzY2FkMDAwMjczNjhkNTg4NjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2YjcwMGY5M2YwYTQwZTg2YzQ2NzZjY2VhYTk5ZGQ0OTczM2M1NzM1OWRjNTUzN2ZkOTI3NTA1MTc3ZThiNjQifQ"
+          "resource": "repo://frontend/src/routes/__root.tsx#L65-L74",
+          "version": "repo-lines-v1:sha256:463b1aa6ebdf3adf47dd1e1762530318e8fcbc1216acd84228c37604e9bb0079:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyYTA4M2FkNzlhMjg1OGVlNGRlYzU5MzcwYzY0NTNjYTA2MzBkNzlhNWIyMzg1YTJhYjkwY2E4ZDQ0ZWZlZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3YTNlMTQ5NzI1OGUxYzc0ZDFjYjdkOWMwNDBhMmJhZmViYjZmMzE1ZmEzOGY3MTJiNjMwOWM2YjM2OGNkOWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzOGFkNmM2OTlmOGNlZjY1NTMxMzQ5NGUxNzQ0ZWY0ZjA0ZDZlY2FiOTA0MDViZjM0YTQwNmJiYjgwZWQwNDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjYTM0NjY5ZjljMzlmZjQzMmJlMzgxZDhhODM0OWQwMzNjZmY0ZGE0ODVlNGFjY2I2OTRkMTVjMjExNDVkMDYifQ"
         }
       ]
     },
     {
-      "id": "claim_25f843ec58634424a99f9a6d5c190a1e",
-      "statement": "The root layout wraps all children in CopilotKit with runtimeUrl '/api/copilotkit', enabling CopilotChat and other CopilotKit components to communicate with the agent backend.",
+      "id": "claim_39894c28bacd45bc8cf6d1e9d7e633bb",
+      "statement": "The CopilotRuntime API route uses @copilotkit/runtime/v2 and @copilotkit/runtime/langgraph, connecting to the LangGraph deployment at http://localhost:36007 via LangGraphAgent with graphId 'agent', using LANGSMITH_API_KEY for auth, an InMemoryAgentRunner, and an Excalidraw MCP server.",
       "evidence": [
         {
-          "resource": "repo://frontend/src/routes/__root.tsx#L70-L70",
-          "version": "repo-lines-v1:sha256:751119fc41074e5029c4c0b2018c6d1466599ebf245aa7519a228c62913ac414:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUxMTE5ZmM0MTA3NGU1MDI5YzRjMGIyMDE4YzZkMTQ2NjU5OWViZjI0NWFhNzUxOWEyMjhjNjI5MTNhYzQxNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUxMTE5ZmM0MTA3NGU1MDI5YzRjMGIyMDE4YzZkMTQ2NjU5OWViZjI0NWFhNzUxOWEyMjhjNjI5MTNhYzQxNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODM4YWQ2YzY5OWY4Y2VmNjU1MzEzNDk0ZTE3NDRlZjRmMDRkNmVjYWI5MDQwNWJmMzRhNDA2YmJiODBlZDA0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNmMGFkNDIwYTdjYmM3MWMzNTJkY2QzNDBjMzVmNTQ4ZDcyNGNmNzRmYTA4ZWU5MTBjNWYxZTA4MjU1MmQ0MSJ9"
+          "resource": "repo://frontend/src/routes/api/copilotkit.%24.ts#L9-L33",
+          "version": "repo-lines-v1:sha256:df9ab7dd33ad8730e4e9422c4a0081c03c29baca2d673af7cedca00c4d061789:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5NmFkMWMwOTVkOGNlYTIyMWZiZTRmMjNlZjIyOWI1NDFhMDU3OGY5YjU1Njc0MTU0ZDA0NjE1NjBlOWQ2ZWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODBiNzY1MThkYWU5NzlmYWViZDAyMzY3YTI5MjkyYTUwZDk3NjA5MjI1MWEzOGE2Y2UzMDg4MGJhNDI4MjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMxOTc1NzE4NjZkY2U0ZGU0NjI0NGMyMzNhNzhlOTUwN2RlNTVlYTZmNWE5NmM1YmE3MGM0NDdlOGYzYTJjN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmMWExNDY2ZTNkOTQ2ZjY3OGFlYWYxYWEwOTljM2IwZWQ2ZDhlOGZiNjdiOWY1YmMzMTMxZmI3MWU0OGZlMzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_26063f5dfd1849aeacc084e5be8c16e5",
+      "statement": "CopilotKitMiddleware from copilotkit is added to the agent's middleware stack in src/deep_agent/graph.py to enable frontend integration.",
+      "evidence": [
+        {
+          "resource": "repo://src/deep_agent/graph.py#L73-L73",
+          "version": "repo-lines-v1:sha256:00b84999f94b859e153194c1faaaa53d36e7810fbe56c46239aba5d33e586fb9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBiODQ5OTlmOTRiODU5ZTE1MzE5NGMxZmFhYWE1M2QzNmU3ODEwZmJlNTZjNDYyMzlhYmE1ZDMzZTU4NmZiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBiODQ5OTlmOTRiODU5ZTE1MzE5NGMxZmFhYWE1M2QzNmU3ODEwZmJlNTZjNDYyMzlhYmE1ZDMzZTU4NmZiOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWZmYmEzNmIxNzhiMDU3NzdmN2RmMTE1MGI1NjkzOThkYTg4MGNkMDVkNzk5M2FmNDM0NDFlOTU2MGJkMTc5MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNjNGE3ZDFjYzc5NmFiYTNlNDY3MjMzMjdmNTE3ZTlmODExOTgyZDI1MGYwNzAyOTg2ZTRiNTc2NGFkOTU4OSJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-06T06:03:50.304Z"
+    "at": "2026-09-07T00:23:46.719Z"
   }
 }

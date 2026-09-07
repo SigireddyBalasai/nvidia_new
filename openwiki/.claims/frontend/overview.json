@@ -1,40 +1,40 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:2bb7d4e669ff422bee67d611eb01730993d84f73fe34c8a431d1dd8ad6fdd21d",
+  "pageVersion": "sha256:3bec69d920812706c4849d85491c135c7ea7b54eb75cdf23ccee286831c8a6ff",
   "claims": [
     {
-      "id": "claim_62e31db243ff4dba9c7bd747b5c0776b",
-      "statement": "The Vite config uses four plugins: devtools() for TanStack devtools, tailwindcss() for Tailwind CSS v4, tanstackStart() for TanStack Start SSR, and viteReact() for React Fast Refresh.",
+      "id": "claim_610b50c8f9b74510bf7df9315c175905",
+      "statement": "The Vite config uses four plugins: devtools(), tailwindcss(), tanstackStart(), and viteReact(), plus an ssr.noExternal configuration for @copilotkit packages.",
       "evidence": [
         {
-          "resource": "repo://frontend/vite.config.ts#L1-L12",
-          "version": "repo-lines-v1:sha256:9d891143fd8d4f4df2ef96d9c68fa69ff209c080a5cd5a058c4526a11c924ac5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZTE2Zjk4N2I4N2Q5Mzc5NmExMTA2OTVmMWZmNGQ2ZjM3MmE3Y2U3MGU0NjRmMzAwMGRlOGU2YTFlYTM3MzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZjYwNDJkYWE2Y2ZkODFjYmVhNmQ1M2M4NWQ0YmY3ZjM4ZGJkNWQ2YzQ1NWJhMWQzY2E0ODMwZWViNTljNDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://frontend/vite.config.ts",
+          "version": "repo-file-v1:sha256:bf3f753b5c98bf0c28e0dbbb5b08fc274eba423701056d34844d25119c976ec4"
         }
       ]
     },
     {
-      "id": "claim_afec168a2f204df0b9a4512283bd4b0e",
-      "statement": "The root layout wraps all children in CopilotKit with runtimeUrl '/api/copilotkit', providing CopilotKit context to the entire application.",
+      "id": "claim_126b9df5a6794b39a0b0f97ea1aa9064",
+      "statement": "The root layout wraps all children in <CopilotKit runtimeUrl='/api/copilotkit' a2ui={...}> with TooltipProvider and TanStackDevtools for the entire application.",
       "evidence": [
         {
-          "resource": "repo://frontend/src/routes/__root.tsx#L70-L70",
-          "version": "repo-lines-v1:sha256:751119fc41074e5029c4c0b2018c6d1466599ebf245aa7519a228c62913ac414:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUxMTE5ZmM0MTA3NGU1MDI5YzRjMGIyMDE4YzZkMTQ2NjU5OWViZjI0NWFhNzUxOWEyMjhjNjI5MTNhYzQxNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUxMTE5ZmM0MTA3NGU1MDI5YzRjMGIyMDE4YzZkMTQ2NjU5OWViZjI0NWFhNzUxOWEyMjhjNjI5MTNhYzQxNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODM4YWQ2YzY5OWY4Y2VmNjU1MzEzNDk0ZTE3NDRlZjRmMDRkNmVjYWI5MDQwNWJmMzRhNDA2YmJiODBlZDA0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTNmMGFkNDIwYTdjYmM3MWMzNTJkY2QzNDBjMzVmNTQ4ZDcyNGNmNzRmYTA4ZWU5MTBjNWYxZTA4MjU1MmQ0MSJ9"
+          "resource": "repo://frontend/src/routes/__root.tsx#L58-L58",
+          "version": "repo-lines-v1:sha256:8e8187205ba453593bc94707d6a00bba023e72b5fb66f46306e9769cdb263064:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGU4MTg3MjA1YmE0NTM1OTNiYzk0NzA3ZDZhMDBiYmEwMjNlNzJiNWZiNjZmNDYzMDZlOTc2OWNkYjI2MzA2NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGU4MTg3MjA1YmE0NTM1OTNiYzk0NzA3ZDZhMDBiYmEwMjNlNzJiNWZiNjZmNDYzMDZlOTc2OWNkYjI2MzA2NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzkyMGI5NmZmYmI5Y2YyYjNjODc4NjQ4NWU4YTRiOWQ0YzQ1NzlmMzhhNjU1MjJhODM2YjBmNmE0ZGU3ZmJkMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmMxZTEzZmIzM2JhMmYwNTZlZmFkY2IzNjIzMTlkODI5YmZkM2NmNzJlZGRmZTAxMDcwNGVlYTQ2OWNkZjUzNSJ9"
         }
       ]
     },
     {
-      "id": "claim_a269763507b54514becc99c3c9e5068d",
-      "statement": "The home route renders a ResizablePanelGroup with a 70/30 split, placing the main content area on the left and CopilotChat on the right.",
+      "id": "claim_4dfa2add57b04f8e985639922e6e5c76",
+      "statement": "The home route renders a flex layout with a CopilotThreadsDrawer on the left and CopilotChat on the right, toggled by a PanelLeftIcon button.",
       "evidence": [
         {
-          "resource": "repo://frontend/src/routes/index.tsx#L9-L25",
-          "version": "repo-lines-v1:sha256:e89d4b3278b1656956b825d440e47153dbd33c75c5e9dcd5a77a2110d0a72ef7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlMjU2ODg2YjQ0NWViNmQ4YmRkMjRmM2QxNTRkODUwNzBkNDRhODc1ZGU1ZjRkYjY4MzIzYmZhNzk2OWQxODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1MTYyYmRjZjBmN2QyMzQwNjgwM2JjYzM3NGI4OTU3MDY5OGZlNjE4YzljYjE4NTAxYzA3ZDM4OTRjM2IzZTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://frontend/src/routes/index.tsx#L15-L15",
+          "version": "repo-lines-v1:sha256:afc33da513defc2fdf87c3b666992bc0e522fae097f1261d870218e14f9e6972:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWZjMzNkYTUxM2RlZmMyZmRmODdjM2I2NjY5OTJiYzBlNTIyZmFlMDk3ZjEyNjFkODcwMjE4ZTE0ZjllNjk3MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWZjMzNkYTUxM2RlZmMyZmRmODdjM2I2NjY5OTJiYzBlNTIyZmFlMDk3ZjEyNjFkODcwMjE4ZTE0ZjllNjk3MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzQ4YjFkYWIwOWM2MTg4MDg1NjNmYzE5ZGRkNmZhNzcyMjVhYThjODIwMmFmOGY0YWU0MWFmNGZiMzVhMjVkZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWZjNjE5MTE4MjkzZjM5Njk2YTBjOTRhZDg2NGNiZTk1MmVhNzFiYzBjZjA3MmFlYjQ4MzBhMjliNjViZjExOCJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-06T06:03:50.304Z"
+    "at": "2026-09-07T00:23:46.719Z"
   }
 }

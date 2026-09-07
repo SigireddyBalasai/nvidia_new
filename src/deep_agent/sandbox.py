@@ -8,6 +8,7 @@ import os
 import tarfile
 import uuid
 import weakref
+import logging
 
 from deepagents.backends.protocol import (
     ExecuteResponse,
@@ -23,6 +24,8 @@ DEFAULT_TIMEOUT = 300
 DEFAULT_SOCKET_URL = "unix:///run/user/1000/podman/podman.sock"
 
 _backends: dict[str, PodmanBackend] = {}
+
+logger = logging.getLogger(__name__)
 
 
 def _cleanup_container(client: PodmanClient, container) -> None:
@@ -75,17 +78,42 @@ class PodmanBackend(BaseSandbox):
     def id(self) -> str:
         return self._container.id
 
-    def execute(self, command: str, *, timeout: int | None = None) -> ExecuteResponse:
-        raise NotImplementedError("Use aexecute()")
+    def execute(
+        self, command: str, *, timeout: int | None = None
+    ) -> ExecuteResponse:
+        logger.debug("Executing command: %s", command)
+        effective_timeout = timeout if timeout is not None else self._default_timeout
 
-    def write(self, file_path: str, content: str) -> WriteResult:
-        raise NotImplementedError("Use awrite()")
+        exit_code, output = self._container.exec_run(
+            ["sh", "-c", command],
+            demux=True,
+        )
 
-    def download_files(self, paths: list[str]) -> list[FileDownloadResponse]:
-        raise NotImplementedError("Use adownload_files()")
+        stdout_text = (output or b"").decode("utf-8", errors="replace")
 
-    def upload_files(self, files: list[tuple[str, bytes]]) -> list[FileUploadResponse]:
-        raise NotImplementedError("Use aupload_files()")
+        # output from demux=True is (stdout, stderr) when stderr is captured
+        if isinstance(output, tuple):
+            stderr_text = output[1] if len(output) > 1 else b""
+        else:
+            stderr_text = output or b""
+
+        output_str = stdout_text
+        if stderr_text:
+            output_str = f"{stdout_text}\n{stderr_text.decode('utf-8', errors='replace')}" if stdout_text else stderr_text.decode(
+                "utf-8", errors="replace"
+            )
+
+        logger.debug(
+            "Command exit_code=%s output=%s",
+            exit_code,
+            output_str[:200] if output_str else "",
+        )
+
+        return ExecuteResponse(
+            output=output_str,
+            exit_code=exit_code or 0,
+            truncated=False,
+        )
 
     async def aexecute(
         self, command: str, *, timeout: int | None = None
@@ -195,6 +223,84 @@ class PodmanBackend(BaseSandbox):
                 await asyncio.to_thread(_put)
                 responses.append(FileUploadResponse(path=path, error=None))
             except Exception as e:  # noqa: BLE001
+                responses.append(FileUploadResponse(path=path, error=str(e)))
+        return responses
+
+    def write(self, file_path: str, content: str) -> WriteResult:
+        try:
+            file_dir = os.path.dirname(file_path) or "/"
+            file_name = os.path.basename(file_path)
+
+            # Build a tar archive in memory with the file
+            buf = io.BytesIO()
+            with tarfile.open(fileobj=buf, mode="w") as tar:
+                data = content.encode("utf-8")
+                info = tarfile.TarInfo(name=file_name)
+                info.size = len(data)
+                tar.addfile(info, io.BytesIO(data))
+            buf.seek(0)
+
+            def _put():
+                # put_archive writes into the directory, so use the parent dir
+                self._container.put_archive(file_dir, buf)
+
+            self._container.put_archive(file_dir, buf)
+            return WriteResult(path=file_path, files_update=None)
+        except Exception as e:  # noqa: BLE001
+            logger.error(
+                "Failed to write file '%s': %s", file_path, e
+            )
+            return WriteResult(error=f"Failed to write file '{file_path}': {e}")
+
+    def download_files(self, paths: list[str]) -> list[FileDownloadResponse]:
+        responses: list[FileDownloadResponse] = []
+        for path in paths:
+            try:
+                stream, _ = self._container.get_archive(path)
+                tar_data = b"".join(stream)
+
+                # Extract file content from tar
+                buf = io.BytesIO(tar_data)
+                with tarfile.open(fileobj=buf, mode="r") as tar:
+                    members = tar.getmembers()
+                    if members:
+                        f = tar.extractfile(members[0])
+                        content = f.read() if f else b""
+                    else:
+                        content = b""
+
+                responses.append(
+                    FileDownloadResponse(path=path, content=content, error=None)
+                )
+            except Exception as e:  # noqa: BLE001
+                logger.error(
+                    "Failed to download file '%s': %s", path, e
+                )
+                responses.append(
+                    FileDownloadResponse(path=path, content=b"", error=str(e))
+                )
+        return responses
+
+    def upload_files(self, files: list[tuple[str, bytes]]) -> list[FileUploadResponse]:
+        responses: list[FileUploadResponse] = []
+        for path, content in files:
+            try:
+                file_dir = os.path.dirname(path) or "/"
+                file_name = os.path.basename(path)
+
+                buf = io.BytesIO()
+                with tarfile.open(fileobj=buf, mode="w") as tar:
+                    info = tarfile.TarInfo(name=file_name)
+                    info.size = len(content)
+                    tar.addfile(info, io.BytesIO(content))
+                buf.seek(0)
+
+                self._container.put_archive(file_dir, buf)
+                responses.append(FileUploadResponse(path=path, error=None))
+            except Exception as e:  # noqa: BLE001
+                logger.error(
+                    "Failed to upload file '%s': %s", path, e
+                )
                 responses.append(FileUploadResponse(path=path, error=str(e)))
         return responses
 
