@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from langchain_core.runnables import RunnableConfig
-
+from copilotkit import CopilotKitMiddleware
 from deepagents import create_deep_agent
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import tool
 from langgraph_sdk.runtime import ServerRuntime
-from copilotkit import CopilotKitMiddleware
 
 from deep_agent.sandbox import get_or_create_sandbox
 
@@ -36,7 +36,7 @@ Workflow:
 @tool
 def utc_now() -> str:
     """Return the current UTC timestamp in ISO format."""
-    return datetime.now(tz=timezone.utc).isoformat()
+    return datetime.now(tz=UTC).isoformat()
 
 
 SUBAGENTS = [
@@ -83,6 +83,7 @@ async def get_agent(config: RunnableConfig, runtime: ServerRuntime):
     if ert:
         thread_id = config.get("configurable", {}).get("thread_id", "default")
         backend = await get_or_create_sandbox(thread_id)
-        yield _build_agent(backend=backend)
+        agent = await asyncio.to_thread(_build_agent, backend)
+        yield agent
     else:
         yield RO_AGENT

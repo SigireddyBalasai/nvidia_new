@@ -1,9 +1,17 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-
+import { CopilotKit } from "@copilotkit/react-core"
 import appCss from "../styles.css?url"
 import { TooltipProvider } from "../components/ui/tooltip"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "../components/ui/card"
+import { AlertTriangleIcon } from "lucide-react"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -27,9 +35,21 @@ export const Route = createRootRoute({
     ],
   }),
   notFoundComponent: () => (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>404</h1>
-      <p>The requested page could not be found.</p>
+    <main className="flex min-h-svh items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertTriangleIcon data-icon="inline-start" />
+            404
+          </CardTitle>
+          <CardDescription>Page not found</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            The requested page could not be found.
+          </p>
+        </CardContent>
+      </Card>
     </main>
   ),
   shellComponent: RootDocument,
@@ -42,7 +62,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <TooltipProvider>{children}</TooltipProvider>
+        <CopilotKit
+          runtimeUrl="/api/copilotkit"
+          a2ui={{
+            theme: {
+              colors: { primary: "oklch(0.205 0 0)" },
+            },
+          }}
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </CopilotKit>
         <TanStackDevtools
           config={{
             position: "bottom-right",
