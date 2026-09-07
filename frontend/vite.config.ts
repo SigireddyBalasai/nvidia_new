@@ -7,7 +7,7 @@ import tailwindcss from "@tailwindcss/vite"
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
   ssr: {
-    noExternal: [/@copilotkit/, '@copilotkit/license-verifier'],
+    noExternal: [/@copilotkit/, "@copilotkit/license-verifier"],
   },
   plugins: [devtools(), tailwindcss(), tanstackStart(), viteReact()],
 })

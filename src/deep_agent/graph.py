@@ -8,12 +8,13 @@ import os
 from datetime import UTC, datetime
 
 from copilotkit import CopilotKitMiddleware
+from deep_agent.sandbox import get_or_create_sandbox
+from deep_agent.tools import get_mcp_tools
 from deepagents import create_deep_agent
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import tool
 from langgraph_sdk.runtime import ServerRuntime
-
-from deep_agent.sandbox import get_or_create_sandbox
+from langchain_core.tools import BaseTool
 
 DEFAULT_MODEL = os.getenv("DEEP_AGENT_MODEL", "nvidia:nemotron-3-super-120b-a12b")
 
@@ -61,10 +62,11 @@ SUBAGENTS = [
 ]
 
 
-def _build_agent(backend=None):
+async def _build_agent(backend=None):
+    mcp_tools_list: list[BaseTool] = await get_mcp_tools()
     return create_deep_agent(
         model=DEFAULT_MODEL,
-        tools=[utc_now],
+        tools=[utc_now, *mcp_tools_list],
         backend=backend,
         system_prompt=SYSTEM_PROMPT,
         subagents=SUBAGENTS,
@@ -74,7 +76,7 @@ def _build_agent(backend=None):
     )
 
 
-RO_AGENT = _build_agent()
+RO_AGENT = asyncio.run(_build_agent())
 
 
 @contextlib.asynccontextmanager
@@ -83,7 +85,7 @@ async def get_agent(config: RunnableConfig, runtime: ServerRuntime):
     if ert:
         thread_id = config.get("configurable", {}).get("thread_id", "default")
         backend = await get_or_create_sandbox(thread_id)
-        agent = await asyncio.to_thread(_build_agent, backend)
+        agent = await _build_agent(backend)
         yield agent
     else:
         yield RO_AGENT

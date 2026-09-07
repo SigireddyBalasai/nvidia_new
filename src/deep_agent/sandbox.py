@@ -66,9 +66,7 @@ class PodmanBackend(BaseSandbox):
         self._client = client
         self._container = container
         self._default_timeout = timeout
-        self._finalizer = weakref.finalize(
-            self, _cleanup_container, client, container
-        )
+        self._finalizer = weakref.finalize(self, _cleanup_container, client, container)
 
     def __del__(self) -> None:
         if self._finalizer.is_alive():
@@ -78,9 +76,7 @@ class PodmanBackend(BaseSandbox):
     def id(self) -> str:
         return self._container.id
 
-    def execute(
-        self, command: str, *, timeout: int | None = None
-    ) -> ExecuteResponse:
+    def execute(self, command: str, *, timeout: int | None = None) -> ExecuteResponse:
         logger.debug("Executing command: %s", command)
         effective_timeout = timeout if timeout is not None else self._default_timeout
 
@@ -99,8 +95,10 @@ class PodmanBackend(BaseSandbox):
 
         output_str = stdout_text
         if stderr_text:
-            output_str = f"{stdout_text}\n{stderr_text.decode('utf-8', errors='replace')}" if stdout_text else stderr_text.decode(
-                "utf-8", errors="replace"
+            output_str = (
+                f"{stdout_text}\n{stderr_text.decode('utf-8', errors='replace')}"
+                if stdout_text
+                else stderr_text.decode("utf-8", errors="replace")
             )
 
         logger.debug(
@@ -167,6 +165,7 @@ class PodmanBackend(BaseSandbox):
             def _put():
                 # put_archive writes into the directory, so use the parent dir
                 self._container.put_archive(file_dir, buf)
+
             await asyncio.to_thread(_put)
             return WriteResult(path=file_path, files_update=None)
         except Exception as e:  # noqa: BLE001
@@ -176,6 +175,7 @@ class PodmanBackend(BaseSandbox):
         responses: list[FileDownloadResponse] = []
         for path in paths:
             try:
+
                 def _get(p=path):
                     stream, _ = self._container.get_archive(p)
                     return b"".join(stream)
@@ -247,9 +247,7 @@ class PodmanBackend(BaseSandbox):
             self._container.put_archive(file_dir, buf)
             return WriteResult(path=file_path, files_update=None)
         except Exception as e:  # noqa: BLE001
-            logger.error(
-                "Failed to write file '%s': %s", file_path, e
-            )
+            logger.error("Failed to write file '%s': %s", file_path, e)
             return WriteResult(error=f"Failed to write file '{file_path}': {e}")
 
     def download_files(self, paths: list[str]) -> list[FileDownloadResponse]:
@@ -273,9 +271,7 @@ class PodmanBackend(BaseSandbox):
                     FileDownloadResponse(path=path, content=content, error=None)
                 )
             except Exception as e:  # noqa: BLE001
-                logger.error(
-                    "Failed to download file '%s': %s", path, e
-                )
+                logger.error("Failed to download file '%s': %s", path, e)
                 responses.append(
                     FileDownloadResponse(path=path, content=b"", error=str(e))
                 )
@@ -298,16 +294,12 @@ class PodmanBackend(BaseSandbox):
                 self._container.put_archive(file_dir, buf)
                 responses.append(FileUploadResponse(path=path, error=None))
             except Exception as e:  # noqa: BLE001
-                logger.error(
-                    "Failed to upload file '%s': %s", path, e
-                )
+                logger.error("Failed to upload file '%s': %s", path, e)
                 responses.append(FileUploadResponse(path=path, error=str(e)))
         return responses
 
 
-async def _start_container(
-    client: PodmanClient, image: str
-):
+async def _start_container(client: PodmanClient, image: str):
     """Create and start a Podman container, returning the container object."""
     name = f"deep-agent-{uuid.uuid4().hex[:8]}"
 

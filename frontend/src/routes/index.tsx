@@ -9,6 +9,7 @@ import {
 } from "@copilotkit/react-core/v2"
 import { Button } from "../components/ui/button"
 import { MessageSquareIcon, PanelLeftIcon } from "lucide-react"
+import { WindowDock, WindowCanvas } from "../components/window-manager"
 
 export const Route = createFileRoute("/")({ component: App })
 
@@ -43,18 +44,27 @@ function App() {
             Conversation
           </div>
         </div>
-        <div className="flex-1 overflow-hidden">
-          <CopilotChat
-            labels={{
-              chatInputPlaceholder: "Type a message...",
-              welcomeMessageText: "How can I help you today?",
-            }}
-            messageView={{
-              assistantMessage: CopilotChatAssistantMessage,
-              userMessage: CopilotChatUserMessage,
-            }}
-            input={CopilotChatInput}
-          />
+        <div className="flex flex-1 overflow-hidden">
+          {/* Chat content */}
+          <div className="flex-1 overflow-hidden">
+            <CopilotChat
+              labels={{
+                chatInputPlaceholder: "Type a message...",
+                welcomeMessageText: "How can I help you today?",
+              }}
+              messageView={{
+                assistantMessage: CopilotChatAssistantMessage,
+                userMessage: CopilotChatUserMessage,
+              }}
+              input={CopilotChatInput}
+            />
+          </div>
+
+          {/* Window Canvas */}
+          <WindowCanvas />
+
+          {/* Window Dock — right side */}
+          <WindowDock />
         </div>
       </div>
     </div>

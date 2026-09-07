@@ -25,7 +25,7 @@ CopilotKit provides the bridge between the React frontend and the LangGraph agen
 In `src/deep_agent/graph.py`, `CopilotKitMiddleware` from `copilotkit` is added to the agent's middleware stack:
 
 ```python
-middleware=[CopilotKitMiddleware()]
+middleware = [CopilotKitMiddleware()]
 ```
 
 This middleware enables CopilotKit's protocol for state synchronization, tool call handling, and interrupt management between the agent and the frontend.

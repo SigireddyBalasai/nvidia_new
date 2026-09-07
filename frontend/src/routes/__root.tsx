@@ -2,6 +2,9 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { CopilotKit } from "@copilotkit/react-core"
+import { CustomA2UIMessageRenderer } from "../components/a2ui/CustomA2UIMessageRenderer"
+import { WindowManagerProvider } from "../components/window-manager"
+import { PieChartTool } from "../components/copilot-tools"
 import appCss from "../styles.css?url"
 import { TooltipProvider } from "../components/ui/tooltip"
 import {
@@ -62,16 +65,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <CopilotKit
-          runtimeUrl="/api/copilotkit"
-          a2ui={{
-            theme: {
-              colors: { primary: "oklch(0.205 0 0)" },
-            },
-          }}
-        >
-          <TooltipProvider>{children}</TooltipProvider>
-        </CopilotKit>
+        <WindowManagerProvider>
+          <CopilotKit
+            runtimeUrl="/api/copilotkit"
+            renderActivityMessages={CustomA2UIMessageRenderer}
+          >
+            <PieChartTool />
+            <TooltipProvider>{children}</TooltipProvider>
+          </CopilotKit>
+        </WindowManagerProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",
