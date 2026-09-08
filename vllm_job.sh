@@ -39,6 +39,9 @@ df -h /home /tmp 2>/dev/null
 echo "=========================================="
 echo "=== INSTALLING VLLM ==="
 echo "=========================================="
+apt install -y python3-venv
+python3 -m venv /home/gsh-yqnaq/venv
+source /home/gsh-yqnaq/venv/bin/activate
 pip install vllm
 
 # Check for vllm
@@ -46,6 +49,7 @@ echo "=========================================="
 echo "=== VLLM CHECK ==="
 echo "=========================================="
 which python3
+source /home/gsh-yqnaq/venv/bin/activate
 python3 -c "import vllm; print(f'vLLM version: {vllm.__version__}')"
 
 echo "=========================================="
@@ -56,6 +60,7 @@ echo "VLLM_PORT=$VLLM_PORT" > /home/gsh-yqnaq/gsh-team20/vllm_port.txt
 
 # Run vLLM server
 echo "Starting vLLM server..."
+source /home/gsh-yqnaq/venv/bin/activate
 python3 -m vllm.entrypoints.openai.api_server \
   --model $MODEL_NAME \
   --host 0.0.0.0 \
