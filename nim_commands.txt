@@ -1,0 +1,10 @@
+mkdir -p /home/gsh-yqnaq/.nim_cache /home/gsh-yqnaq/.nim_runtime_cache /home/gsh-yqnaq/.nim_nginx /home/gsh-yqnaq/.nim_tmp
+apptainer exec --nv \
+  --bind /home/gsh-yqnaq/.nim_cache:/opt/nim/.cache \
+  --bind /home/gsh-yqnaq/.nim_runtime_cache:/opt/nim/runtime-cache \
+  --bind /home/gsh-yqnaq/.nim_nginx:/opt/nim/nginx \
+  --bind /home/gsh-yqnaq/.nim_tmp:/tmp \
+  /home/gsh-yqnaq/qwen3.8-27b_2.1.1-variant.sif bash /opt/nim/start_server.sh 2>&1 &
+sleep 90 && curl -s http://localhost:8000/v1/models
+curl -s http://localhost:8000/health
+curl -s -X POST http://localhost:8000/v1/chat/completions -H "Content-Type: application/json" -d '{"model":"qwen3.8-27b","messages":[{"role":"user","content":"Hello, who are you?"}],"max_tokens":100}'
