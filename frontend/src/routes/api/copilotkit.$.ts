@@ -7,7 +7,7 @@ import {
 import { LangGraphAgent } from "@copilotkit/runtime/langgraph"
 
 const LANGGRAPH_DEPLOYMENT_URL =
-  process.env.LANGGRAPH_DEPLOYMENT_URL || "http://localhost:36007"
+  process.env.LANGGRAPH_DEPLOYMENT_URL || "http://localhost:2024"
 const LANGSMITH_API_KEY = process.env.LANGSMITH_API_KEY || ""
 
 const langGraphAgent = new LangGraphAgent({
@@ -21,15 +21,6 @@ const runtime = new CopilotRuntime({
     default: langGraphAgent,
   },
   runner: new InMemoryAgentRunner(),
-  mcpApps: {
-    servers: [
-      {
-        type: "http",
-        url: "https://mcp.excalidraw.com",
-        serverId: "excalidraw",
-      },
-    ],
-  },
 })
 
 const handler = createCopilotRuntimeHandler({

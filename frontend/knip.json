@@ -2,9 +2,6 @@
   "ignore": ["src/components/ui/**", "src/hooks/use-mobile.ts", "src/lib/utils.ts"],
   "ignoreDependencies": [
     "@copilotkit/react-core",
-    "@copilotkit/react-ui",
-    "@hashbrownai/core",
-    "@hashbrownai/react",
     "@shadcn/react",
     "@tanstack/react-router-ssr-query",
     "@tanstack/router-plugin",

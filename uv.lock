@@ -741,7 +741,7 @@ wheels = [
 ]
 
 [[package]]
-name = "deep-agent-template"
+name = "deep-agent"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
