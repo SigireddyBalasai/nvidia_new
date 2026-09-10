@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { useAgent, useCopilotKit } from "@copilotkit/react-core/v2"
 import { useStore } from "@/lib/store"
+import { useLangGraphThreads } from "@/lib/langgraph-threads"
 import { AgentRadar } from "./agent-radar"
 import { ProgressIndicator } from "./progress-indicator"
 import { checkBackendHealth } from "@/lib/api"
@@ -100,10 +101,12 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const vertical = useStore((s) => s.vertical)
   const setIsProcessing = useStore((s) => s.setIsProcessing)
   const currentSessionId = useStore((s) => s.currentSessionId)
+  const setCurrentSessionId = useStore((s) => s.setCurrentSessionId)
   // OSS-only headless chat: useAgent + copilotkit.runAgent (no license key).
   const { agent } = useAgent({ agentId: "default" })
   const { copilotkit } = useCopilotKit()
   const isLoading = agent.isRunning
+  const { createThread } = useLangGraphThreads()
 
   const queries = VERTICAL_QUERIES[vertical] || VERTICAL_QUERIES.cbg
   const [input, setInput] = useState("")
@@ -158,10 +161,20 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       return
     }
 
-    // Sync active thread id onto agent before sending
-    if (currentSessionId) {
-      agent.threadId = currentSessionId
+    // Create a new thread if none is active
+    let activeThreadId = currentSessionId
+    if (!activeThreadId) {
+      activeThreadId = await createThread()
+      if (!activeThreadId) {
+        setBackendStatus("error")
+        setBackendError("Failed to create thread")
+        return
+      }
+      setCurrentSessionId(activeThreadId)
     }
+
+    // Sync active thread id onto agent before sending
+    agent.threadId = activeThreadId
 
     setInput("")
     setTimeout(scrollToBottom, 50)
@@ -181,7 +194,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       setBackendStatus(recheck.status)
       setBackendError(recheck.status === "error" ? recheck.message : null)
     }
-  }, [agent, copilotkit, currentSessionId])
+  }, [agent, copilotkit, currentSessionId, createThread, setCurrentSessionId])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
