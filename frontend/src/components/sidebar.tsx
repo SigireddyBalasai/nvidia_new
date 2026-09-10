@@ -86,7 +86,7 @@ export function Sidebar() {
 
         {today.length > 0 && (
           <div>
-            <p className="text-[10px] font-semibold text-cyan-500/70 uppercase tracking-wider px-2 mb-1">
+            <p className="text-[10px] font-semibold text-primary/70 uppercase tracking-wider px-2 mb-1">
               Today
             </p>
             {today.map((t) => (
@@ -183,12 +183,12 @@ function ThreadItem({
       onClick={onClick}
       className={`w-full text-left rounded-lg px-2.5 py-2 transition-all group relative ${
         active
-          ? "bg-cyan-500/10 text-cyan-50 border-l-2 border-cyan-500 shadow-[inset_0_0_12px_rgba(6,182,212,0.1)]"
+          ? "bg-primary/10 text-primary-foreground border-l-2 border-primary shadow-[inset_0_0_12px_rgba(var(--primary),0.1)]"
           : "hover:bg-sidebar-accent/50 text-sidebar-foreground border-l-2 border-transparent"
       }`}
     >
       <div className="flex items-start gap-2">
-        <Clock size={12} className={`mt-0.5 shrink-0 ${active ? "text-cyan-500" : "text-muted-foreground"}`} />
+        <Clock size={12} className={`mt-0.5 shrink-0 ${active ? "text-primary" : "text-muted-foreground"}`} />
         <div className="min-w-0 flex-1">
           {isEditing ? (
             <div className="flex items-center gap-1">
@@ -227,7 +227,7 @@ function ThreadItem({
               {thread.name || "New Analysis"}
             </p>
           )}
-          <p className={`text-[10px] mt-0.5 ${active ? "text-cyan-500/70" : "text-muted-foreground"}`}>
+          <p className={`text-[10px] mt-0.5 ${active ? "text-primary/70" : "text-muted-foreground"}`}>
             {displayTime}
           </p>
         </div>
@@ -239,7 +239,7 @@ function ThreadItem({
                 setIsEditing(true);
                 setEditName(thread.name || "");
               }}
-              className={`p-1 rounded hover:bg-muted ${active ? "text-cyan-500/70 hover:text-cyan-500" : "text-muted-foreground hover:text-foreground"}`}
+              className={`p-1 rounded hover:bg-muted ${active ? "text-primary/70 hover:text-primary" : "text-muted-foreground hover:text-foreground"}`}
               title="Rename session"
             >
               <Edit3 size={10} />
@@ -249,7 +249,7 @@ function ThreadItem({
                 e.stopPropagation();
                 onDelete();
               }}
-              className={`p-1 rounded hover:bg-destructive/10 ${active ? "text-cyan-500/70 hover:text-destructive" : "text-muted-foreground hover:text-destructive"}`}
+              className={`p-1 rounded hover:bg-destructive/10 ${active ? "text-primary/70 hover:text-destructive" : "text-muted-foreground hover:text-destructive"}`}
               title="Delete session"
             >
               <Trash2 size={10} />
