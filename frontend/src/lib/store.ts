@@ -11,7 +11,17 @@ export interface PlotlyChart {
   data: any[];
   layout?: any;
   title?: string;
+  type?: string;
 }
+
+export interface TableData {
+  type: "table";
+  title: string;
+  columns: string[];
+  rows: Record<string, unknown>[];
+}
+
+export type Visualization = PlotlyChart | TableData;
 
 export type AgentStatus = "idle" | "active" | "completed" | "skipped";
 
@@ -60,6 +70,7 @@ interface DataForgeState {
   // ─── Current session ───
   currentSessionId: string | null;
   setCurrentSessionId: (id: string | null) => void;
+  lastActiveThreadId: string | null;
 
   // ─── Live Multi-Agent Execution ───
   steps: StepProgress[];
@@ -79,8 +90,8 @@ interface DataForgeState {
   // ─── Results & Messages ───
   response: string | null;
   setResponse: (r: string | null) => void;
-  charts: PlotlyChart[];
-  setCharts: (c: PlotlyChart[]) => void;
+  charts: Visualization[];
+  setCharts: (c: Visualization[]) => void;
   diagnostics: Record<string, unknown>;
   setDiagnostics: (d: Record<string, unknown>) => void;
 
@@ -108,7 +119,15 @@ export const useStore = create<DataForgeState>((set, get) => ({
   setVertical: (v) => set({ vertical: v }),
 
   currentSessionId: null,
-  setCurrentSessionId: (id) => set({ currentSessionId: id }),
+  setCurrentSessionId: (id) => {
+    if (id && typeof window !== "undefined") {
+      localStorage.setItem("lastActiveThreadId", id);
+    }
+    set({ currentSessionId: id });
+  },
+  lastActiveThreadId: typeof window !== "undefined"
+    ? localStorage.getItem("lastActiveThreadId")
+    : null,
 
   steps: [],
   setSteps: (s) => set({ steps: s }),
@@ -224,11 +243,17 @@ export const useStore = create<DataForgeState>((set, get) => ({
         role: "Chief Financial Officer",
       },
     }),
-  logout: () =>
+  logout: () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("lastActiveThreadId");
+    }
     set({
       isAuthenticated: false,
       user: null,
-    }),
+      currentSessionId: null,
+      lastActiveThreadId: null,
+    });
+  },
 
   isProcessing: false,
   setIsProcessing: (b) => set({ isProcessing: b }),
