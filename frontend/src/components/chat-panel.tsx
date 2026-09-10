@@ -106,7 +106,11 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const { agent } = useAgent({ agentId: "default" })
   const { copilotkit } = useCopilotKit()
   const isLoading = agent.isRunning
-  const { createThread } = useLangGraphThreads()
+  const { threads, createThread } = useLangGraphThreads()
+  
+  // Find active thread name
+  const activeThread = threads.find((t) => t.id === currentSessionId)
+  const threadName = activeThread?.name || "New Analysis"
 
   const queries = VERTICAL_QUERIES[vertical] || VERTICAL_QUERIES.cbg
   const [input, setInput] = useState("")
@@ -261,7 +265,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
           <div className="text-center py-12">
             <BarChart3 size={48} className="mx-auto mb-4 text-muted-foreground/30" />
             <h3 className="text-sm font-semibold text-foreground mb-2">
-              Start an Analysis
+              {threadName}
             </h3>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
               Ask a question about your data or select an example query below.
@@ -310,7 +314,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
             placeholder={
               backendStatus === "error"
                 ? "Backend offline — start agent server first"
-                : "Ask about your data..."
+                : `Message ${threadName}...`
             }
             disabled={isLoading || backendStatus === "error"}
             className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-50"
