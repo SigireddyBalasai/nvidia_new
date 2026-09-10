@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Clock, MessageSquare, Plus, GitFork, ExternalLink, Trash2, Edit3, Check, X } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { useLangGraphThreads } from "@/lib/langgraph-threads";
@@ -6,11 +6,18 @@ import type { SidebarThread } from "@/lib/langgraph-threads";
 import { useCopilotChatConfiguration } from "@copilotkit/react-core/v2";
 
 export function Sidebar() {
-  const { threads: rawThreads, isLoading, error, createThread, deleteThread, renameThread } = useLangGraphThreads();
+  const { threads: rawThreads, isLoading, error, createThread, deleteThread, renameThread, refresh } = useLangGraphThreads();
   const config = useCopilotChatConfiguration();
   const currentSessionId = useStore((s) => s.currentSessionId);
   const setCurrentSessionId = useStore((s) => s.setCurrentSessionId);
   const isProcessing = useStore((s) => s.isProcessing);
+
+  // Refetch threads when active thread changes (e.g., auto-created on first message)
+  useEffect(() => {
+    if (currentSessionId) {
+      refresh();
+    }
+  }, [currentSessionId, refresh]);
 
   // Filter out archived and group by date
   const activeThreads = rawThreads.filter((t) => !t.archived);
