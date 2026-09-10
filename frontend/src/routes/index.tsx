@@ -1,17 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, Navigate } from "@tanstack/react-router"
 import { useEffect } from "react"
 import { useStore } from "@/lib/store"
-import { Header } from "@/components/header"
-import { Sidebar } from "@/components/sidebar"
-import { ChatPanel } from "@/components/chat-panel"
-import { InsightsPanel } from "@/components/insights-panel"
 import { StarterPage } from "@/components/starter-page"
 
 export const Route = createFileRoute("/")({ component: App })
 
 function App() {
-  const sidebarOpen = useStore((s) => s.sidebarOpen)
   const isAuthenticated = useStore((s) => s.isAuthenticated)
+  const lastActiveThreadId = useStore((s) => s.lastActiveThreadId)
   const logout = useStore((s) => s.logout)
   const panelLayout = useStore((s) => s.panelLayout)
   const setPanelLayout = useStore((s) => s.setPanelLayout)
@@ -60,16 +56,11 @@ function App() {
     return <StarterPage />
   }
 
-  return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        {sidebarOpen && panelLayout === "split" && <Sidebar />}
-        <main className="flex flex-1 overflow-hidden">
-          {panelLayout !== "visuals" && <ChatPanel isFullscreen={panelLayout === "chat"} />}
-          {panelLayout !== "chat" && <InsightsPanel isFullscreen={panelLayout === "visuals"} />}
-        </main>
-      </div>
-    </div>
-  )
+  // Redirect to last active thread if exists
+  if (lastActiveThreadId) {
+    return <Navigate to="/thread/$threadId" params={{ threadId: lastActiveThreadId }} />
+  }
+
+  // Fallback to starter page if no threads
+  return <StarterPage />
 }
