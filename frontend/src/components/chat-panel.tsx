@@ -99,6 +99,7 @@ type BackendStatus = "checking" | "ok" | "error"
 export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const vertical = useStore((s) => s.vertical)
   const setIsProcessing = useStore((s) => s.setIsProcessing)
+  const currentSessionId = useStore((s) => s.currentSessionId)
   // OSS-only headless chat: useAgent + copilotkit.runAgent (no license key).
   const { agent } = useAgent({ agentId: "default" })
   const { copilotkit } = useCopilotKit()
@@ -157,6 +158,11 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       return
     }
 
+    // Sync active thread id onto agent before sending
+    if (currentSessionId) {
+      agent.threadId = currentSessionId
+    }
+
     setInput("")
     setTimeout(scrollToBottom, 50)
 
@@ -175,7 +181,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       setBackendStatus(recheck.status)
       setBackendError(recheck.status === "error" ? recheck.message : null)
     }
-  }, [agent, copilotkit])
+  }, [agent, copilotkit, currentSessionId])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

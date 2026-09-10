@@ -1,7 +1,7 @@
 /**
  * DataForge Zustand store.
  * Global state management for the dashboard.
- * CopilotKit handles threads — this store manages UI state.
+ * LangGraph SDK manages threads; this store manages UI state.
  */
 import { create } from "zustand";
 

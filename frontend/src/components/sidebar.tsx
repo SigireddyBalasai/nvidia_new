@@ -1,122 +1,42 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Clock, MessageSquare, Plus, GitFork, ExternalLink, Trash2, Edit3, Check, X } from "lucide-react";
 import { useStore } from "@/lib/store";
-
-// CopilotKit thread type
-interface Thread {
-  id: string;
-  agentId: string;
-  name: string | null;
-  archived: boolean;
-  createdAt: string;
-  updatedAt: string;
-  lastRunAt?: string;
-}
-
-// Thread management hook — wraps CopilotKit useThreads with localStorage fallback
-function useThreadManagement() {
-  const [threads, setThreads] = useState<Thread[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Load threads from localStorage on mount
-  useEffect(() => {
-    setIsLoading(true);
-    try {
-      const stored = localStorage.getItem("dataforge-threads");
-      if (stored) {
-        setThreads(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.error("Failed to load threads:", e);
-      setError("Failed to load sessions");
-    }
-    setIsLoading(false);
-  }, []);
-
-  // Persist threads to localStorage
-  const persistThreads = useCallback((updated: Thread[]) => {
-    setThreads(updated);
-    try {
-      localStorage.setItem("dataforge-threads", JSON.stringify(updated));
-    } catch (e) {
-      console.error("Failed to persist threads:", e);
-    }
-  }, []);
-
-  const createThread = useCallback((name: string) => {
-    const thread: Thread = {
-      id: `df-${Date.now()}`,
-      agentId: "default",
-      name,
-      archived: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    const updated = [thread, ...threads];
-    persistThreads(updated);
-    return thread;
-  }, [threads, persistThreads]);
-
-  const deleteThread = useCallback((id: string) => {
-    const updated = threads.filter((t) => t.id !== id);
-    persistThreads(updated);
-  }, [threads, persistThreads]);
-
-  const renameThread = useCallback((id: string, name: string) => {
-    const updated = threads.map((t) =>
-      t.id === id ? { ...t, name, updatedAt: new Date().toISOString() } : t
-    );
-    persistThreads(updated);
-  }, [threads, persistThreads]);
-
-  const archiveThread = useCallback((id: string) => {
-    const updated = threads.map((t) =>
-      t.id === id ? { ...t, archived: true, updatedAt: new Date().toISOString() } : t
-    );
-    persistThreads(updated);
-  }, [threads, persistThreads]);
-
-  return {
-    threads,
-    isLoading,
-    error,
-    createThread,
-    deleteThread,
-    renameThread,
-    archiveThread,
-  };
-}
+import { useLangGraphThreads } from "@/lib/langgraph-threads";
+import type { SidebarThread } from "@/lib/langgraph-threads";
+import { useCopilotChatConfiguration } from "@copilotkit/react-core/v2";
 
 export function Sidebar() {
-  const {
-    threads,
-    isLoading,
-    error,
-    createThread,
-    deleteThread,
-    renameThread,
-  } = useThreadManagement();
+  const { threads: rawThreads, isLoading, error, createThread, deleteThread, renameThread } = useLangGraphThreads();
+  const config = useCopilotChatConfiguration();
   const currentSessionId = useStore((s) => s.currentSessionId);
   const setCurrentSessionId = useStore((s) => s.setCurrentSessionId);
-  const vertical = useStore((s) => s.vertical);
   const isProcessing = useStore((s) => s.isProcessing);
 
-  const today = threads.filter((t) => {
+  // Filter out archived and group by date
+  const activeThreads = rawThreads.filter((t) => !t.archived);
+  const today = activeThreads.filter((t) => {
     const d = new Date(t.createdAt);
     const now = new Date();
     return d.toDateString() === now.toDateString();
   });
-  const earlier = threads.filter((t) => {
+  const earlier = activeThreads.filter((t) => {
     const d = new Date(t.createdAt);
     const now = new Date();
     return d.toDateString() !== now.toDateString();
   });
 
-  const handleNewAnalysis = () => {
-    const thread = createThread(`Analysis ${threads.length + 1}`);
-    setCurrentSessionId(thread.id);
-  };
+  const handleNewAnalysis = useCallback(async () => {
+    const id = await createThread("New Analysis");
+    if (id) {
+      setCurrentSessionId(id);
+      config?.setActiveThreadId(id, { explicit: true });
+    }
+  }, [createThread, setCurrentSessionId, config]);
+
+  const handleSelectThread = useCallback((id: string) => {
+    setCurrentSessionId(id);
+    config?.setActiveThreadId(id, { explicit: true });
+  }, [setCurrentSessionId, config]);
 
   return (
     <aside className="w-64 border-r border-border bg-sidebar flex flex-col shrink-0 overflow-hidden">
@@ -149,7 +69,7 @@ export function Sidebar() {
           </div>
         )}
 
-        {!isLoading && !error && threads.length === 0 && (
+        {!isLoading && !error && activeThreads.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <MessageSquare className="mx-auto mb-2 opacity-40" size={24} />
             <p className="text-xs">No sessions yet.</p>
@@ -167,7 +87,7 @@ export function Sidebar() {
                 key={t.id}
                 thread={t}
                 active={t.id === currentSessionId}
-                onClick={() => setCurrentSessionId(t.id)}
+                onClick={() => handleSelectThread(t.id)}
                 onDelete={() => deleteThread(t.id)}
                 onRename={(name) => renameThread(t.id, name)}
               />
@@ -185,7 +105,7 @@ export function Sidebar() {
                 key={t.id}
                 thread={t}
                 active={t.id === currentSessionId}
-                onClick={() => setCurrentSessionId(t.id)}
+                onClick={() => handleSelectThread(t.id)}
                 onDelete={() => deleteThread(t.id)}
                 onRename={(name) => renameThread(t.id, name)}
               />
@@ -221,7 +141,7 @@ function ThreadItem({
   onDelete,
   onRename,
 }: {
-  thread: Thread;
+  thread: SidebarThread;
   active: boolean;
   onClick: () => void;
   onDelete: () => void;

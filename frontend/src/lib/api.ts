@@ -82,24 +82,7 @@ export async function checkBackendHealth(): Promise<{
   }
 }
 
-// ─── Thread-backed session management via CopilotKit ───
-
-/**
- * Create a new analysis session (CopilotKit thread).
- */
-export async function createSession(vertical: string): Promise<SessionInfo> {
-  const threadId = `df-${vertical}-${Date.now()}`;
-  return {
-    session_id: threadId,
-    question: "",
-    vertical,
-    status: "active",
-    created_at: new Date().toISOString(),
-    response: null,
-    charts: [],
-    diagnostics: {},
-  };
-}
+// ─── Thread-backed session management ───
 
 /**
  * Submit a query — in CopilotKit mode, messages are sent via useCopilotChat/useAgent.
@@ -112,38 +95,6 @@ export async function submitQuery(req: QueryRequest): Promise<QueryResponse> {
     session_id: sessionId,
     status: "processing",
   };
-}
-
-/**
- * Fetch sessions — CopilotKit threads are managed via useThreads hook.
- * This returns an empty array; the sidebar should use useThreads instead.
- */
-export async function fetchSessions(): Promise<SessionInfo[]> {
-  return [];
-}
-
-/**
- * Fetch a single session by ID.
- */
-export async function fetchSession(id: string): Promise<SessionInfo> {
-  return {
-    session_id: id,
-    question: "",
-    vertical: "cbg",
-    status: "active",
-    created_at: new Date().toISOString(),
-    response: null,
-    charts: [],
-    diagnostics: {},
-  };
-}
-
-/**
- * SSE stream for progress events — in CopilotKit mode, progress is tracked
- * via the agent's event stream.
- */
-export function createSSEStream(sessionId: string): EventSource {
-  return new EventSource("about:blank");
 }
 
 /**
