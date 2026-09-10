@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ThreadThreadIdRouteImport } from './routes/thread/$threadId'
 import { Route as ApiCopilotkitSplatRouteImport } from './routes/api/copilotkit.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThreadThreadIdRoute = ThreadThreadIdRouteImport.update({
+  id: '/thread/$threadId',
+  path: '/thread/$threadId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCopilotkitSplatRoute = ApiCopilotkitSplatRouteImport.update({
@@ -25,27 +31,31 @@ const ApiCopilotkitSplatRoute = ApiCopilotkitSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/thread/$threadId': typeof ThreadThreadIdRoute
   '/api/copilotkit/$': typeof ApiCopilotkitSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/thread/$threadId': typeof ThreadThreadIdRoute
   '/api/copilotkit/$': typeof ApiCopilotkitSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/thread/$threadId': typeof ThreadThreadIdRoute
   '/api/copilotkit/$': typeof ApiCopilotkitSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/copilotkit/$'
+  fullPaths: '/' | '/thread/$threadId' | '/api/copilotkit/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/copilotkit/$'
-  id: '__root__' | '/' | '/api/copilotkit/$'
+  to: '/' | '/thread/$threadId' | '/api/copilotkit/$'
+  id: '__root__' | '/' | '/thread/$threadId' | '/api/copilotkit/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ThreadThreadIdRoute: typeof ThreadThreadIdRoute
   ApiCopilotkitSplatRoute: typeof ApiCopilotkitSplatRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/thread/$threadId': {
+      id: '/thread/$threadId'
+      path: '/thread/$threadId'
+      fullPath: '/thread/$threadId'
+      preLoaderRoute: typeof ThreadThreadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/copilotkit/$': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ThreadThreadIdRoute: ThreadThreadIdRoute,
   ApiCopilotkitSplatRoute: ApiCopilotkitSplatRoute,
 }
 export const routeTree = rootRouteImport
