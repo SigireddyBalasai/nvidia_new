@@ -7,7 +7,11 @@ import {
   BarChart3,
   AlertCircle,
   RefreshCw,
+  Brain,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react"
+import { useNavigate } from "@tanstack/react-router"
 import { useAgent, useCopilotKit } from "@copilotkit/react-core/v2"
 import { useStore } from "@/lib/store"
 import { useLangGraphThreads } from "@/lib/langgraph-threads"
@@ -91,6 +95,42 @@ const CATEGORY_COLORS: Record<string, string> = {
   optimization: "text-amber-500",
 }
 
+interface ThinkingMessageProps {
+  content: string
+  isLatest?: boolean
+}
+
+function ThinkingMessage({ content, isLatest = false }: ThinkingMessageProps) {
+  const [isExpanded, setIsExpanded] = useState(isLatest)
+
+  return (
+    <div className="max-w-[80%] rounded-xl border border-amber-500/30 bg-amber-500/5 overflow-hidden">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-amber-500/10 transition-colors"
+      >
+        <Brain size={14} className="text-amber-500 shrink-0" />
+        <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+          Thinking Process
+        </span>
+        <div className="flex-1" />
+        {isExpanded ? (
+          <ChevronUp size={12} className="text-amber-500" />
+        ) : (
+          <ChevronDown size={12} className="text-amber-500" />
+        )}
+      </button>
+      {isExpanded && (
+        <div className="px-4 pb-3 border-t border-amber-500/20">
+          <p className="text-xs text-muted-foreground whitespace-pre-wrap mt-2 leading-relaxed">
+            {content}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface ChatPanelProps {
   isFullscreen?: boolean
 }
@@ -106,6 +146,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const { agent } = useAgent({ agentId: "default" })
   const { copilotkit } = useCopilotKit()
   const isLoading = agent.isRunning
+  const navigate = useNavigate()
   const { threads, createThread, fetchThreadMessages } = useLangGraphThreads()
   
   // Find active thread name
@@ -117,7 +158,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking")
   const [backendError, setBackendError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [threadMessages, setThreadMessages] = useState<Array<{id: string, role: "user" | "assistant", content: string}>>([])
+  const [threadMessages, setThreadMessages] = useState<Array<{id: string, role: "user" | "assistant" | "reasoning", content: string}>>([])
 
   // Keep global processing flag in sync with agent run state
   useEffect(() => {
@@ -135,13 +176,13 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       const mapped = messages
         .filter(
           (m: { type?: string; content?: unknown }) =>
-            (m.type === "human" || m.type === "ai") &&
+            (m.type === "human" || m.type === "ai" || m.type === "reasoning") &&
             typeof m.content === "string" &&
-            (m.content as string).trim().length > 0,
+            (m.content).trim().length > 0,
         )
         .map((m: { id?: string; type: string; content: unknown }) => ({
           id: m.id || `msg-${Date.now()}`,
-          role: (m.type === "human" ? "user" : "assistant") as "user" | "assistant",
+          role: (m.type === "human" ? "user" : m.type === "reasoning" ? "reasoning" : "assistant"),
           content: m.content as string,
         }))
       setThreadMessages(mapped)
@@ -153,16 +194,16 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const agentMessages = agent.messages
     .filter(
       (m) =>
-        (m.role === "user" || m.role === "assistant") &&
+        (m.role === "user" || m.role === "assistant" || m.role === "reasoning") &&
         typeof m.content === "string" &&
         m.content.trim().length > 0,
     )
     .map((m) => ({
       id: m.id,
-      role: m.role as "user" | "assistant",
+      role: m.role as "user" | "assistant" | "reasoning",
       content: m.content as string,
     }))
-  
+
   // Use thread messages as base, append any new agent messages not already in the list
   const messages = threadMessages.length > 0
     ? [...threadMessages, ...agentMessages.filter((am) => !threadMessages.some((tm) => tm.id === am.id))]
@@ -207,6 +248,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
         return
       }
       setCurrentSessionId(activeThreadId)
+      navigate({ to: "/thread/$threadId", params: { threadId: activeThreadId } })
     }
 
     // Sync active thread id onto agent before sending
@@ -230,7 +272,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       setBackendStatus(recheck.status)
       setBackendError(recheck.status === "error" ? recheck.message : null)
     }
-  }, [agent, copilotkit, currentSessionId, createThread, setCurrentSessionId])
+  }, [agent, copilotkit, currentSessionId, createThread, setCurrentSessionId, navigate])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -305,22 +347,37 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
           </div>
         )}
 
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
+        {messages.map((msg, index) => {
+          if (msg.role === "reasoning") {
+            const isLatestReasoning = index === messages.length - 1 || 
+              (index < messages.length - 1 && messages[index + 1]?.role !== "reasoning")
+            return (
+              <div key={msg.id} className="flex justify-start">
+                <ThinkingMessage 
+                  content={msg.content} 
+                  isLatest={isLatestReasoning && isLoading}
+                />
+              </div>
+            )
+          }
+          
+          return (
             <div
-              className={`max-w-[80%] rounded-xl px-4 py-3 ${
-                msg.role === "user"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-secondary-foreground border border-border"
-              }`}
+              key={msg.id}
+              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              <div
+                className={`max-w-[80%] rounded-xl px-4 py-3 ${
+                  msg.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground border border-border"
+                }`}
+              >
+                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
 
         {isLoading && (
           <div className="flex justify-start">
