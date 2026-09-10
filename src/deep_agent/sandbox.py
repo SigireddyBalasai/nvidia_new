@@ -85,21 +85,16 @@ class PodmanBackend(BaseSandbox):
             demux=True,
         )
 
-        stdout_text = (output or b"").decode("utf-8", errors="replace")
-
-        # output from demux=True is (stdout, stderr) when stderr is captured
         if isinstance(output, tuple):
-            stderr_text = output[1] if len(output) > 1 else b""
+            stdout_text = (output[0] or b"").decode("utf-8", errors="replace")
+            stderr_text = (output[1] or b"").decode("utf-8", errors="replace")
         else:
-            stderr_text = output or b""
+            stdout_text = (output or b"").decode("utf-8", errors="replace")
+            stderr_text = ""
 
         output_str = stdout_text
         if stderr_text:
-            output_str = (
-                f"{stdout_text}\n{stderr_text.decode('utf-8', errors='replace')}"
-                if stdout_text
-                else stderr_text.decode("utf-8", errors="replace")
-            )
+            output_str = f"{stdout_text}\n{stderr_text}" if stdout_text else stderr_text
 
         logger.debug(
             "Command exit_code=%s output=%s",
@@ -239,10 +234,6 @@ class PodmanBackend(BaseSandbox):
                 info.size = len(data)
                 tar.addfile(info, io.BytesIO(data))
             buf.seek(0)
-
-            def _put():
-                # put_archive writes into the directory, so use the parent dir
-                self._container.put_archive(file_dir, buf)
 
             self._container.put_archive(file_dir, buf)
             return WriteResult(path=file_path, files_update=None)

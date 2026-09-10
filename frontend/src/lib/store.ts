@@ -12,6 +12,10 @@ export interface PlotlyChart {
   layout?: any;
   title?: string;
   type?: string;
+  xKey?: string;
+  yKey?: string;
+  nameKey?: string;
+  valueKey?: string;
 }
 
 export interface TableData {

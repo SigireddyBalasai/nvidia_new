@@ -1,1 +1,1 @@
-{"mcpServers": {"git": {"command": "npx", "args": ["-y", "@cyanheads/git-mcp-server", "--repository", "/home/balasai/tcs/nvidia_new"], "env": {}}, "memory": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"], "env": {}}}}
+{"mcpServers": {"git": {"command": "npx", "args": ["-y", "@cyanheads/git-mcp-server", "--repository", "."], "env": {}}, "memory": {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"], "env": {}}}}

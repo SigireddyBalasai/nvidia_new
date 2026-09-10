@@ -20,7 +20,7 @@ function ThreadView() {
   const setCurrentSessionId = useStore((s) => s.setCurrentSessionId)
   const panelLayout = useStore((s) => s.panelLayout)
   const setPanelLayout = useStore((s) => s.setPanelLayout)
-  const { threads } = useLangGraphThreads()
+  const { threads, isLoading } = useLangGraphThreads()
 
   // Update current session when threadId changes
   useEffect(() => {
@@ -40,7 +40,7 @@ function ThreadView() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [panelLayout, setPanelLayout])
 
-  // Check if thread exists
+  // Check if thread exists (wait for loading to complete)
   const threadExists = threads.some((t) => t.id === threadId)
 
   // Redirect to home if not authenticated or thread doesn't exist
@@ -48,7 +48,8 @@ function ThreadView() {
     return <Navigate to="/" />
   }
 
-  if (!threadExists && threads.length > 0) {
+  // Only redirect if we've finished loading, there are other threads, and this one genuinely doesn't exist
+  if (!isLoading && threads.length > 0 && !threadExists) {
     return <Navigate to="/" />
   }
 

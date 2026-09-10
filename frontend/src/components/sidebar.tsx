@@ -38,7 +38,7 @@ export function Sidebar() {
     const id = await createThread("New Analysis");
     if (id) {
       setCurrentSessionId(id);
-      config?.setActiveThreadId(id, { explicit: true });
+      try { config?.setActiveThreadId(id, { explicit: true }); } catch {}
       navigate({ to: "/thread/$threadId", params: { threadId: id } });
     }
   }, [createThread, setCurrentSessionId, config, navigate]);

@@ -1,4 +1,5 @@
-import { useStore, type AgentStatus } from "@/lib/store";
+import { useStore  } from "@/lib/store";
+import type {AgentStatus} from "@/lib/store";
 import { Database, Cpu, Target, BarChart3, CheckCircle2, RotateCcw } from "lucide-react";
 
 interface AgentMeta {

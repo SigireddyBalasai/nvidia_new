@@ -31,7 +31,7 @@ export function StarterPage({ onEnterApp }: StarterPageProps) {
 
     // Strict validation: check default password
     if (!password || password.trim() !== DEFAULT_PASSWORD) {
-      setErrorMessage(`Invalid credentials. Default password is: ${DEFAULT_PASSWORD}`);
+      setErrorMessage("Invalid credentials. Please try again.");
       return;
     }
 

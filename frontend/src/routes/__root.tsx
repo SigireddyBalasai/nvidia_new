@@ -1,5 +1,6 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { CopilotKit } from "@copilotkit/react-core"
+import { ToolRenderers } from "../components/tool-renderers"
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
@@ -42,6 +43,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <CopilotKit runtimeUrl="/api/copilotkit">
+          <ToolRenderers />
           {children}
         </CopilotKit>
         <Scripts />

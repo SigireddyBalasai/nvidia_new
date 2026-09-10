@@ -12,7 +12,7 @@ import {
   ChevronUp,
 } from "lucide-react"
 import { useNavigate } from "@tanstack/react-router"
-import { useAgent, useCopilotKit } from "@copilotkit/react-core/v2"
+import { useAgent, useCopilotKit, CopilotChatToolCallsView } from "@copilotkit/react-core/v2"
 import { useStore } from "@/lib/store"
 import { useLangGraphThreads } from "@/lib/langgraph-threads"
 import { AgentRadar } from "./agent-radar"
@@ -158,7 +158,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking")
   const [backendError, setBackendError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [threadMessages, setThreadMessages] = useState<Array<{id: string, role: "user" | "assistant" | "reasoning", content: string}>>([])
+  const [threadMessages, setThreadMessages] = useState<Array<{id: string, role: "user" | "assistant" | "reasoning", content: string, toolCalls?: any}>>([])
 
   // Keep global processing flag in sync with agent run state
   useEffect(() => {
@@ -180,10 +180,11 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
             typeof m.content === "string" &&
             (m.content).trim().length > 0,
         )
-        .map((m: { id?: string; type: string; content: unknown }) => ({
+        .map((m: { id?: string; type: string; content: unknown; tool_calls?: unknown }) => ({
           id: m.id || `msg-${Date.now()}`,
           role: (m.type === "human" ? "user" : m.type === "reasoning" ? "reasoning" : "assistant"),
           content: m.content as string,
+          toolCalls: (m as any).tool_calls,
         }))
       setThreadMessages(mapped)
     }
@@ -202,6 +203,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       id: m.id,
       role: m.role as "user" | "assistant" | "reasoning",
       content: m.content as string,
+      toolCalls: (m as any).toolCalls,
     }))
 
   // Use thread messages as base, append any new agent messages not already in the list
@@ -374,6 +376,9 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                {msg.role === "assistant" && (msg as any).toolCalls && (
+                  <CopilotChatToolCallsView message={msg as any} messages={messages as any} />
+                )}
               </div>
             </div>
           )

@@ -1,5 +1,6 @@
-import { useStore } from "@/lib/store"
-import { BarChart3, TrendingUp, PieChart, Activity } from "lucide-react"
+import { useStore   } from "@/lib/store"
+import type {Visualization, TableData} from "@/lib/store";
+import { BarChart3, TrendingUp, PieChart, Activity, Table } from "lucide-react"
 import {
   BarChart,
   Bar,
@@ -34,6 +35,10 @@ interface ChartData {
   valueKey?: string
 }
 
+function isTableData(v: Visualization): v is TableData {
+  return v.type === "table"
+}
+
 interface InsightsPanelProps {
   isFullscreen?: boolean
 }
@@ -43,16 +48,20 @@ export function InsightsPanel({ isFullscreen = false }: InsightsPanelProps) {
   const response = useStore((s) => s.response)
   const isProcessing = useStore((s) => s.isProcessing)
 
-  // Parse charts from store
-  const parsedCharts: ChartData[] = charts.map((c) => ({
-    type: (c as any).type || "bar",
-    title: (c as any).title || "Chart",
-    data: c.data || [],
-    xKey: (c as any).xKey,
-    yKey: (c as any).yKey,
-    nameKey: (c as any).nameKey,
-    valueKey: (c as any).valueKey,
-  }))
+  // Separate charts and tables from store
+  const parsedCharts: ChartData[] = charts
+    .filter((c) => !isTableData(c))
+    .map((c) => ({
+      type: (c as any).type || "bar",
+      title: (c as any).title || "Chart",
+      data: (c as any).data || [],
+      xKey: (c as any).xKey,
+      yKey: (c as any).yKey,
+      nameKey: (c as any).nameKey,
+      valueKey: (c as any).valueKey,
+    }))
+  
+  const tables: TableData[] = charts.filter(isTableData)
 
   return (
     <div
@@ -108,6 +117,10 @@ export function InsightsPanel({ isFullscreen = false }: InsightsPanelProps) {
 
         {parsedCharts.map((chart, i) => (
           <ChartCard key={i} chart={chart} />
+        ))}
+
+        {tables.map((table, i) => (
+          <TableCard key={`table-${i}`} table={table} />
         ))}
 
         {/* Response Summary */}
@@ -219,6 +232,47 @@ function ChartCard({ chart }: { chart: ChartData }) {
             </RechartsPieChart>
           )}
         </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
+
+function TableCard({ table }: { table: TableData }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4">
+      <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+        <Table size={14} className="text-primary" />
+        {table.title}
+      </h4>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="border-b border-border">
+              {table.columns.map((col) => (
+                <th
+                  key={col}
+                  className="px-3 py-2 text-left font-semibold text-muted-foreground"
+                >
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map((row, i) => (
+              <tr
+                key={i}
+                className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+              >
+                {table.columns.map((col) => (
+                  <td key={col} className="px-3 py-2 text-foreground">
+                    {row[col] !== undefined ? String(row[col]) : "-"}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
