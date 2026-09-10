@@ -106,7 +106,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const { agent } = useAgent({ agentId: "default" })
   const { copilotkit } = useCopilotKit()
   const isLoading = agent.isRunning
-  const { threads, createThread } = useLangGraphThreads()
+  const { threads, createThread, fetchThreadMessages } = useLangGraphThreads()
   
   // Find active thread name
   const activeThread = threads.find((t) => t.id === currentSessionId)
@@ -117,13 +117,40 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking")
   const [backendError, setBackendError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [threadMessages, setThreadMessages] = useState<Array<{id: string, role: "user" | "assistant", content: string}>>([])
 
   // Keep global processing flag in sync with agent run state
   useEffect(() => {
     setIsProcessing(isLoading)
   }, [isLoading, setIsProcessing])
 
-  const messages = agent.messages
+  // Load messages when thread changes
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!currentSessionId) {
+        setThreadMessages([])
+        return
+      }
+      const messages = await fetchThreadMessages(currentSessionId)
+      const mapped = messages
+        .filter(
+          (m: { type?: string; content?: unknown }) =>
+            (m.type === "human" || m.type === "ai") &&
+            typeof m.content === "string" &&
+            (m.content as string).trim().length > 0,
+        )
+        .map((m: { id?: string; type: string; content: unknown }) => ({
+          id: m.id || `msg-${Date.now()}`,
+          role: (m.type === "human" ? "user" : "assistant") as "user" | "assistant",
+          content: m.content as string,
+        }))
+      setThreadMessages(mapped)
+    }
+    loadMessages()
+  }, [currentSessionId, fetchThreadMessages])
+
+  // Merge thread messages with live agent messages
+  const agentMessages = agent.messages
     .filter(
       (m) =>
         (m.role === "user" || m.role === "assistant") &&
@@ -135,6 +162,11 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       role: m.role as "user" | "assistant",
       content: m.content as string,
     }))
+  
+  // Use thread messages as base, append any new agent messages not already in the list
+  const messages = threadMessages.length > 0
+    ? [...threadMessages, ...agentMessages.filter((am) => !threadMessages.some((tm) => tm.id === am.id))]
+    : agentMessages
 
   // Check backend health on mount
   useEffect(() => {

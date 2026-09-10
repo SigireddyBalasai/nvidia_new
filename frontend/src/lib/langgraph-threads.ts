@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Client } from "@langchain/langgraph-sdk";
-import type { Thread, Metadata } from "@langchain/langgraph-sdk";
+import type { Thread, Metadata, Message } from "@langchain/langgraph-sdk";
 
 const LANGGRAPH_URL =
   import.meta.env.VITE_LANGGRAPH_DEPLOYMENT_URL || "http://localhost:2024";
@@ -113,6 +113,21 @@ export function useLangGraphThreads() {
     [fetchThreads],
   );
 
+  const fetchThreadMessages = useCallback(
+    async (threadId: string): Promise<Message[]> => {
+      try {
+        const client = clientRef.current;
+        const state = await client.threads.getState(threadId);
+        const values = state.values as Record<string, unknown> | undefined;
+        return (values?.messages as Message[]) || [];
+      } catch (e) {
+        console.error("Failed to fetch thread messages:", e);
+        return [];
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     fetchThreads();
   }, [fetchThreads]);
@@ -125,6 +140,7 @@ export function useLangGraphThreads() {
     renameThread,
     archiveThread,
     deleteThread,
+    fetchThreadMessages,
     refresh: fetchThreads,
   };
 }
