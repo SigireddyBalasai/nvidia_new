@@ -1,5 +1,6 @@
-import { PanelLeftClose, PanelLeftOpen, LogOut, ArrowLeft, GitFork, ExternalLink } from "lucide-react";
-import { useStore, type Vertical } from "@/lib/store";
+import { PanelLeftClose, PanelLeftOpen, LogOut, ArrowLeft, GitFork, ExternalLink, Link } from "lucide-react";
+import { useStore  } from "@/lib/store";
+import type {Vertical} from "@/lib/store";
 
 const VERTICALS: { id: Vertical; label: string; emoji: string }[] = [
   { id: "cbg", label: "Consumer Goods", emoji: "🛒" },
@@ -20,6 +21,11 @@ export function Header() {
     if (typeof window !== "undefined") {
       window.history.pushState({ view: "starter" }, "", "/");
     }
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    console.log("Link copied to clipboard");
   };
 
   return (
@@ -63,6 +69,15 @@ export function Header() {
           <span className="hidden md:inline">NeMo Traces</span>
           <ExternalLink size={11} className="text-cyan-400/80" />
         </a>
+
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          title="Copy link to clipboard"
+        >
+          <Link size={14} />
+          <span>Share</span>
+        </button>
       </div>
 
 
