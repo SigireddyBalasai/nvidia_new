@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { Clock, MessageSquare, Plus, GitFork, ExternalLink, Trash2, Edit3, Check, X } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@/lib/store";
 import { useLangGraphThreads } from "@/lib/langgraph-threads";
 import type { SidebarThread } from "@/lib/langgraph-threads";
@@ -11,6 +12,7 @@ export function Sidebar() {
   const currentSessionId = useStore((s) => s.currentSessionId);
   const setCurrentSessionId = useStore((s) => s.setCurrentSessionId);
   const isProcessing = useStore((s) => s.isProcessing);
+  const navigate = useNavigate();
 
   // Refetch threads when active thread changes (e.g., auto-created on first message)
   useEffect(() => {
@@ -37,13 +39,15 @@ export function Sidebar() {
     if (id) {
       setCurrentSessionId(id);
       config?.setActiveThreadId(id, { explicit: true });
+      navigate({ to: "/thread/$threadId", params: { threadId: id } });
     }
-  }, [createThread, setCurrentSessionId, config]);
+  }, [createThread, setCurrentSessionId, config, navigate]);
 
   const handleSelectThread = useCallback((id: string) => {
     setCurrentSessionId(id);
     config?.setActiveThreadId(id, { explicit: true });
-  }, [setCurrentSessionId, config]);
+    navigate({ to: "/thread/$threadId", params: { threadId: id } });
+  }, [setCurrentSessionId, config, navigate]);
 
   return (
     <aside className="w-64 border-r border-border bg-sidebar flex flex-col shrink-0 overflow-hidden">
