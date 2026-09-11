@@ -1,7 +1,13 @@
 "use client"
 
-import { useFrontendTool } from "@copilotkit/react-core/v2"
+import {
+  useFrontendTool,
+  useHumanInTheLoop,
+  ToolCallStatus,
+} from "@copilotkit/react-core/v2"
 import { z } from "zod"
+import { useState } from "react"
+import { MessageCircleQuestion, Send } from "lucide-react"
 import { useStore } from "@/lib/store"
 import { PieChartComponent } from "@/components/pie-chart"
 import {
@@ -45,16 +51,23 @@ export function PieChartTool() {
       return `Rendered pie chart "${title}" with ${data.length} slices.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.data) {
         return (
           <div className="flex items-center justify-center p-4">
-            <span className="text-sm text-muted-foreground">Loading chart...</span>
+            <span className="text-sm text-muted-foreground">
+              Loading chart...
+            </span>
           </div>
         )
       }
       return (
         <div className="flex flex-col items-center justify-center p-4">
-          <PieChartComponent data={args.data} className="h-[280px] w-full" outerRadius={100} />
+          <PieChartComponent
+            data={args.data}
+            className="h-[280px] w-full"
+            outerRadius={100}
+          />
         </div>
       )
     },
@@ -92,10 +105,13 @@ export function BarChartTool() {
       return `Rendered bar chart "${title}" with ${data.length} bars.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.data) {
         return (
           <div className="flex items-center justify-center p-4">
-            <span className="text-sm text-muted-foreground">Loading chart...</span>
+            <span className="text-sm text-muted-foreground">
+              Loading chart...
+            </span>
           </div>
         )
       }
@@ -103,7 +119,10 @@ export function BarChartTool() {
         <div className="flex flex-col items-center justify-center p-4">
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={args.data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="hsl(var(--border))"
+              />
               <XAxis
                 dataKey="name"
                 tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
@@ -163,10 +182,13 @@ export function LineChartTool() {
       return `Rendered line chart "${title}" with ${data.length} points.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.data) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.data) {
         return (
           <div className="flex items-center justify-center p-4">
-            <span className="text-sm text-muted-foreground">Loading chart...</span>
+            <span className="text-sm text-muted-foreground">
+              Loading chart...
+            </span>
           </div>
         )
       }
@@ -174,7 +196,10 @@ export function LineChartTool() {
         <div className="flex flex-col items-center justify-center p-4">
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={args.data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="hsl(var(--border))"
+              />
               <XAxis
                 dataKey="name"
                 tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
@@ -241,10 +266,13 @@ export function TableTool() {
       return `Rendered table "${title}" with ${columns.length} columns and ${rows.length} rows.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.columns || !args?.rows) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.columns || !args.rows) {
         return (
           <div className="flex items-center justify-center p-4">
-            <span className="text-sm text-muted-foreground">Loading table...</span>
+            <span className="text-sm text-muted-foreground">
+              Loading table...
+            </span>
           </div>
         )
       }
@@ -256,7 +284,7 @@ export function TableTool() {
                 {args.columns.map((col, i) => (
                   <th
                     key={i}
-                    className="text-left py-2 px-3 font-semibold text-foreground"
+                    className="px-3 py-2 text-left font-semibold text-foreground"
                   >
                     {col}
                   </th>
@@ -270,7 +298,7 @@ export function TableTool() {
                   className="border-b border-border/50 hover:bg-muted/50"
                 >
                   {row.map((cell, j) => (
-                    <td key={j} className="py-2 px-3 text-muted-foreground">
+                    <td key={j} className="px-3 py-2 text-muted-foreground">
                       {cell}
                     </td>
                   ))}
@@ -282,6 +310,90 @@ export function TableTool() {
       )
     },
   })
+
+  return null
+}
+
+// ─── Ask User Tool (HITL) ───
+
+const AskUserSchema = z.object({
+  question: z.string().describe("The question to ask the user"),
+  context: z
+    .string()
+    .optional()
+    .describe("Optional context about why this question is being asked"),
+})
+
+export function AskUserTool() {
+  useHumanInTheLoop(
+    {
+      name: "ask_user",
+      description:
+        "Ask the user a question and wait for their response before continuing.",
+      parameters: AskUserSchema,
+      render: ({ args, status, respond }) => {
+        const [answer, setAnswer] = useState("")
+
+        if (status === ToolCallStatus.Executing) {
+          return (
+            <div className="max-w-[85%] rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
+              <div className="mb-3 flex items-start gap-2">
+                <MessageCircleQuestion
+                  size={14}
+                  className="mt-0.5 shrink-0 text-blue-500"
+                />
+                <div>
+                  <p className="mb-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                    Question from Agent
+                  </p>
+                  <p className="text-sm text-foreground">{args.question}</p>
+                  {args.context && (
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      {args.context}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && answer.trim()) {
+                      respond(answer.trim())
+                      setAnswer("")
+                    }
+                  }}
+                  placeholder="Type your answer..."
+                  className="flex-1 rounded-lg border border-border bg-background px-3 py-1.5 text-xs focus:ring-2 focus:ring-primary/30 focus:outline-none"
+                />
+                <button
+                  onClick={() => {
+                    if (answer.trim()) {
+                      respond(answer.trim())
+                      setAnswer("")
+                    }
+                  }}
+                  disabled={!answer.trim()}
+                  className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                >
+                  <Send size={12} />
+                </button>
+              </div>
+            </div>
+          )
+        }
+
+        if (status === ToolCallStatus.Complete) {
+          return null
+        }
+
+        return null
+      },
+    },
+    []
+  )
 
   return null
 }

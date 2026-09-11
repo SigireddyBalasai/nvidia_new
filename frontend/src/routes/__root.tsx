@@ -1,6 +1,7 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router"
 import { CopilotKit } from "@copilotkit/react-core"
 import { ToolRenderers } from "../components/tool-renderers"
+import { AskUserTool } from "../components/copilot-tools"
 import appCss from "../styles.css?url"
 
 export const Route = createRootRoute({
@@ -26,8 +27,8 @@ export const Route = createRootRoute({
   }),
   notFoundComponent: () => (
     <main className="flex min-h-svh items-center justify-center p-4">
-      <div className="w-full max-w-md p-6 rounded-xl border border-border bg-card shadow-lg">
-        <h1 className="text-2xl font-bold text-foreground mb-2">404</h1>
+      <div className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-lg">
+        <h1 className="mb-2 text-2xl font-bold text-foreground">404</h1>
         <p className="text-muted-foreground">Page not found.</p>
       </div>
     </main>
@@ -44,6 +45,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <CopilotKit runtimeUrl="/api/copilotkit">
           <ToolRenderers />
+          <AskUserTool />
           {children}
         </CopilotKit>
         <Scripts />

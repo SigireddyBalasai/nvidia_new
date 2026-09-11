@@ -83,7 +83,8 @@ export function PieChartComponent({
                 <ChartTooltipContent
                   formatter={(value, name) => {
                     const num = Number(value)
-                    const pct = total > 0 ? ((num / total) * 100).toFixed(1) : "0"
+                    const pct =
+                      total > 0 ? ((num / total) * 100).toFixed(1) : "0"
                     return (
                       <div className="flex items-center gap-2">
                         <span className="text-muted-foreground">{name}</span>
@@ -104,7 +105,8 @@ export function PieChartComponent({
                   formatter={(value) => {
                     const item = data.find((d) => d.name === value)
                     if (!item) return value
-                    const pct = total > 0 ? ((item.value / total) * 100).toFixed(1) : "0"
+                    const pct =
+                      total > 0 ? ((item.value / total) * 100).toFixed(1) : "0"
                     return `${item.name} — ${item.value.toLocaleString()} (${pct}%)`
                   }}
                 />

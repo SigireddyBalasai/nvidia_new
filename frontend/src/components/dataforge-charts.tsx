@@ -27,7 +27,10 @@ import {
 
 // ─── Shared look & feel (matches existing chart tools) ───
 
-const AXIS_TICK = { fontSize: 11, fill: "hsl(var(--muted-foreground))" } as const
+const AXIS_TICK = {
+  fontSize: 11,
+  fill: "hsl(var(--muted-foreground))",
+} as const
 const TOOLTIP_STYLE = {
   backgroundColor: "hsl(var(--card))",
   border: "1px solid hsl(var(--border))",
@@ -42,7 +45,7 @@ const WARNING = "#f59e0b"
 
 const RowSchema = z.record(
   z.string(),
-  z.union([z.string(), z.number(), z.boolean(), z.null()]),
+  z.union([z.string(), z.number(), z.boolean(), z.null()])
 )
 
 function LoadingFallback({ label }: { label: string }) {
@@ -73,9 +76,19 @@ function ChartTitle({ title }: { title: string }) {
 
 const TimeSeriesSchema = z.object({
   title: z.string().describe("Title of the time series chart"),
-  rows: z.array(RowSchema).describe("Raw data rows with a date column and a numeric metric column (max ~300 rows)"),
-  dateCol: z.string().optional().describe("Date column name; auto-detected if omitted"),
-  metricCol: z.string().optional().describe("Metric column name; auto-detected if omitted"),
+  rows: z
+    .array(RowSchema)
+    .describe(
+      "Raw data rows with a date column and a numeric metric column (max ~300 rows)"
+    ),
+  dateCol: z
+    .string()
+    .optional()
+    .describe("Date column name; auto-detected if omitted"),
+  metricCol: z
+    .string()
+    .optional()
+    .describe("Metric column name; auto-detected if omitted"),
 })
 
 export function TimeSeriesChartTool() {
@@ -86,11 +99,14 @@ export function TimeSeriesChartTool() {
     parameters: TimeSeriesSchema,
     handler: async ({ title, rows, dateCol, metricCol }) => {
       const built = aggregateTimeSeries(rows, dateCol, metricCol)
-      if (!built) return "Not enough date/metric data to build a time series (need 2+ dated points)."
+      if (!built)
+        return "Not enough date/metric data to build a time series (need 2+ dated points)."
       return `Rendered time series "${title}" with ${built.points.length} points.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.rows) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.rows)
+        return <LoadingFallback label="Loading chart..." />
       const built = aggregateTimeSeries(args.rows, args.dateCol, args.metricCol)
       if (!built) return null
       return (
@@ -102,7 +118,14 @@ export function TimeSeriesChartTool() {
               <XAxis dataKey="name" tick={AXIS_TICK} minTickGap={24} />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Line type="monotone" dataKey="value" name={built.metricCol} stroke={SUCCESS} strokeWidth={2.5} dot={{ fill: SUCCESS }} />
+              <Line
+                type="monotone"
+                dataKey="value"
+                name={built.metricCol}
+                stroke={SUCCESS}
+                strokeWidth={2.5}
+                dot={{ fill: SUCCESS }}
+              />
             </LineChart>
           </ChartShell>
         </div>
@@ -116,9 +139,17 @@ export function TimeSeriesChartTool() {
 
 const ForecastSchema = z.object({
   title: z.string().describe("Title of the forecast chart"),
-  forecast: z.array(z.number()).describe("Point forecast values per future period"),
-  lower: z.array(z.number()).optional().describe("Lower 95% confidence bound per period"),
-  upper: z.array(z.number()).optional().describe("Upper 95% confidence bound per period"),
+  forecast: z
+    .array(z.number())
+    .describe("Point forecast values per future period"),
+  lower: z
+    .array(z.number())
+    .optional()
+    .describe("Lower 95% confidence bound per period"),
+  upper: z
+    .array(z.number())
+    .optional()
+    .describe("Upper 95% confidence bound per period"),
 })
 
 export function ForecastChartTool() {
@@ -132,7 +163,9 @@ export function ForecastChartTool() {
       return `Rendered forecast "${title}" with ${forecast.length} periods.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.forecast) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.forecast)
+        return <LoadingFallback label="Loading chart..." />
       if (args.forecast.length === 0) return null
       const rows = args.forecast.map((value, i) => ({
         period: `Period +${i + 1}`,
@@ -149,9 +182,32 @@ export function ForecastChartTool() {
               <XAxis dataKey="period" tick={AXIS_TICK} />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Area type="monotone" dataKey="upper" name="Upper 95%" stroke="transparent" fill={ACCENT} fillOpacity={0.15} connectNulls />
-              <Area type="monotone" dataKey="lower" name="Lower 95%" stroke="transparent" fill={ACCENT} fillOpacity={0.15} connectNulls />
-              <Line type="monotone" dataKey="value" name="Projected" stroke={ACCENT} strokeWidth={2.5} dot={{ fill: ACCENT }} />
+              <Area
+                type="monotone"
+                dataKey="upper"
+                name="Upper 95%"
+                stroke="transparent"
+                fill={ACCENT}
+                fillOpacity={0.15}
+                connectNulls
+              />
+              <Area
+                type="monotone"
+                dataKey="lower"
+                name="Lower 95%"
+                stroke="transparent"
+                fill={ACCENT}
+                fillOpacity={0.15}
+                connectNulls
+              />
+              <Line
+                type="monotone"
+                dataKey="value"
+                name="Projected"
+                stroke={ACCENT}
+                strokeWidth={2.5}
+                dot={{ fill: ACCENT }}
+              />
             </ComposedChart>
           </ChartShell>
         </div>
@@ -165,9 +221,19 @@ export function ForecastChartTool() {
 
 const CategorySchema = z.object({
   title: z.string().describe("Title of the breakdown chart"),
-  rows: z.array(RowSchema).describe("Raw data rows with a category column and a numeric metric column (max ~300 rows)"),
-  catCol: z.string().optional().describe("Category column name; auto-detected if omitted"),
-  metricCol: z.string().optional().describe("Metric column name; auto-detected if omitted"),
+  rows: z
+    .array(RowSchema)
+    .describe(
+      "Raw data rows with a category column and a numeric metric column (max ~300 rows)"
+    ),
+  catCol: z
+    .string()
+    .optional()
+    .describe("Category column name; auto-detected if omitted"),
+  metricCol: z
+    .string()
+    .optional()
+    .describe("Metric column name; auto-detected if omitted"),
 })
 
 export function CategoryChartTool() {
@@ -178,11 +244,14 @@ export function CategoryChartTool() {
     parameters: CategorySchema,
     handler: async ({ title, rows, catCol, metricCol }) => {
       const built = aggregateCategory(rows, catCol, metricCol)
-      if (!built) return "Could not find a category + numeric column pair in the rows."
+      if (!built)
+        return "Could not find a category + numeric column pair in the rows."
       return `Rendered category breakdown "${title}" with ${built.points.length} categories.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.rows) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.rows)
+        return <LoadingFallback label="Loading chart..." />
       const built = aggregateCategory(args.rows, args.catCol, args.metricCol)
       if (!built) return null
       return (
@@ -191,7 +260,14 @@ export function CategoryChartTool() {
           <ChartShell>
             <BarChart data={built.points}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis dataKey="name" tick={AXIS_TICK} interval={0} angle={-18} dy={10} height={52} />
+              <XAxis
+                dataKey="name"
+                tick={AXIS_TICK}
+                interval={0}
+                angle={-18}
+                dy={10}
+                height={52}
+              />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Bar dataKey="value" fill={ACCENT} radius={[4, 4, 0, 0]} />
@@ -208,9 +284,19 @@ export function CategoryChartTool() {
 
 const ScatterSchema = z.object({
   title: z.string().describe("Title of the scatter chart"),
-  rows: z.array(RowSchema).describe("Raw data rows with at least two numeric columns (max ~300 rows)"),
-  xCol: z.string().optional().describe("X-axis column; auto-detected if omitted"),
-  yCol: z.string().optional().describe("Y-axis column; auto-detected if omitted"),
+  rows: z
+    .array(RowSchema)
+    .describe(
+      "Raw data rows with at least two numeric columns (max ~300 rows)"
+    ),
+  xCol: z
+    .string()
+    .optional()
+    .describe("X-axis column; auto-detected if omitted"),
+  yCol: z
+    .string()
+    .optional()
+    .describe("Y-axis column; auto-detected if omitted"),
   labelCol: z.string().optional().describe("Label column for hover tooltips"),
 })
 
@@ -222,12 +308,20 @@ export function ScatterChartTool() {
     parameters: ScatterSchema,
     handler: async ({ title, rows, xCol, yCol, labelCol }) => {
       const built = scatterPoints(rows, xCol, yCol, labelCol)
-      if (!built) return "Need 3+ rows with two numeric columns for a scatter plot."
+      if (!built)
+        return "Need 3+ rows with two numeric columns for a scatter plot."
       return `Rendered scatter plot "${title}" with ${built.points.length} points.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.rows) return <LoadingFallback label="Loading chart..." />
-      const built = scatterPoints(args.rows, args.xCol, args.yCol, args.labelCol)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.rows)
+        return <LoadingFallback label="Loading chart..." />
+      const built = scatterPoints(
+        args.rows,
+        args.xCol,
+        args.yCol,
+        args.labelCol
+      )
       if (!built) return null
       return (
         <div>
@@ -237,7 +331,10 @@ export function ScatterChartTool() {
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
               <XAxis dataKey="x" name={built.xCol} tick={AXIS_TICK} />
               <YAxis dataKey="y" name={built.yCol} tick={AXIS_TICK} />
-              <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ strokeDasharray: "3 3" }} />
+              <Tooltip
+                contentStyle={TOOLTIP_STYLE}
+                cursor={{ strokeDasharray: "3 3" }}
+              />
               <Scatter data={built.points} fill={DANGER} />
             </ScatterChart>
           </ChartShell>
@@ -254,7 +351,9 @@ const WaterfallSchema = z.object({
   title: z.string().describe("Title of the waterfall chart"),
   priorRevenue: z.number().describe("Baseline revenue of the prior period"),
   currentRevenue: z.number().describe("Revenue of the current period"),
-  stockoutLoss: z.number().describe("Revenue lost to stockouts / disruptions (positive number)"),
+  stockoutLoss: z
+    .number()
+    .describe("Revenue lost to stockouts / disruptions (positive number)"),
 })
 
 export function WaterfallChartTool() {
@@ -267,23 +366,47 @@ export function WaterfallChartTool() {
       return `Rendered waterfall "${title}".`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || args?.priorRevenue == null) return <LoadingFallback label="Loading chart..." />
-      const segments = waterfallSegments(args.priorRevenue, args.currentRevenue, args.stockoutLoss)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || args.priorRevenue == null)
+        return <LoadingFallback label="Loading chart..." />
+      const segments = waterfallSegments(
+        args.priorRevenue,
+        args.currentRevenue,
+        args.stockoutLoss
+      )
       return (
         <div>
           <ChartTitle title={args.title} />
           <ChartShell>
             <BarChart data={segments}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis dataKey="name" tick={AXIS_TICK} interval={0} angle={-12} dy={8} height={48} />
+              <XAxis
+                dataKey="name"
+                tick={AXIS_TICK}
+                interval={0}
+                angle={-12}
+                dy={8}
+                height={48}
+              />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="base" stackId="wf" fill="transparent" isAnimationActive={false} />
+              <Bar
+                dataKey="base"
+                stackId="wf"
+                fill="transparent"
+                isAnimationActive={false}
+              />
               <Bar dataKey="span" stackId="wf" radius={[4, 4, 0, 0]}>
                 {segments.map((s, i) => (
                   <Cell
                     key={i}
-                    fill={s.kind === "total" ? ACCENT : s.kind === "up" ? SUCCESS : DANGER}
+                    fill={
+                      s.kind === "total"
+                        ? ACCENT
+                        : s.kind === "up"
+                          ? SUCCESS
+                          : DANGER
+                    }
                   />
                 ))}
               </Bar>
@@ -305,10 +428,13 @@ const ScenarioSchema = z.object({
       z.object({
         name: z.string().describe("Scenario name"),
         values: z.array(z.number()).describe("Projected values per period"),
-      }),
+      })
     )
     .describe("Two or more policy scenarios to compare"),
-  periods: z.array(z.string()).optional().describe("Period labels; defaults to Period +1, +2, ..."),
+  periods: z
+    .array(z.string())
+    .optional()
+    .describe("Period labels; defaults to Period +1, +2, ..."),
 })
 
 const SCENARIO_COLORS = [GRID_STROKE, SUCCESS, WARNING, ACCENT, DANGER]
@@ -324,11 +450,15 @@ export function ScenarioChartTool() {
       return `Rendered scenario comparison "${title}" with ${scenarios.length} scenarios.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.scenarios) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.scenarios)
+        return <LoadingFallback label="Loading chart..." />
       if (args.scenarios.length === 0) return null
       const horizon = Math.max(...args.scenarios.map((s) => s.values.length))
       const rows = Array.from({ length: horizon }, (_, i) => {
-        const row: Record<string, string | number> = { period: args.periods?.[i] ?? `Period +${i + 1}` }
+        const row: Record<string, string | number> = {
+          period: args.periods?.[i] ?? `Period +${i + 1}`,
+        }
         for (const s of args.scenarios) row[s.name] = s.values[i] ?? 0
         return row
       })
@@ -343,7 +473,12 @@ export function ScenarioChartTool() {
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
               {names.map((name, i) => (
-                <Bar key={name} dataKey={name} fill={SCENARIO_COLORS[i % SCENARIO_COLORS.length]} radius={[4, 4, 0, 0]} />
+                <Bar
+                  key={name}
+                  dataKey={name}
+                  fill={SCENARIO_COLORS[i % SCENARIO_COLORS.length]}
+                  radius={[4, 4, 0, 0]}
+                />
               ))}
             </BarChart>
           </ChartShell>
@@ -363,7 +498,7 @@ const AllocationSchema = z.object({
       z.object({
         name: z.string().describe("Supplier / item / category name"),
         value: z.number().describe("Allocated order value or units"),
-      }),
+      })
     )
     .describe("Optimal allocation schedule entries"),
 })
@@ -379,7 +514,9 @@ export function AllocationChartTool() {
       return `Rendered allocation "${title}" with ${items.length} entries.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.items) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.items)
+        return <LoadingFallback label="Loading chart..." />
       if (args.items.length === 0) return null
       return (
         <div>
@@ -387,7 +524,14 @@ export function AllocationChartTool() {
           <ChartShell>
             <BarChart data={args.items}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis dataKey="name" tick={AXIS_TICK} interval={0} angle={-18} dy={10} height={52} />
+              <XAxis
+                dataKey="name"
+                tick={AXIS_TICK}
+                interval={0}
+                angle={-18}
+                dy={10}
+                height={52}
+              />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Bar dataKey="value" fill={SUCCESS} radius={[4, 4, 0, 0]} />
@@ -404,8 +548,12 @@ export function AllocationChartTool() {
 
 const SimulationSchema = z.object({
   title: z.string().describe("Title of the simulation chart"),
-  grossRecovery: z.number().describe("Gross revenue recovery under the optimal policy ($)"),
-  holdingIncrease: z.number().describe("Associated holding/program cost increase ($)"),
+  grossRecovery: z
+    .number()
+    .describe("Gross revenue recovery under the optimal policy ($)"),
+  holdingIncrease: z
+    .number()
+    .describe("Associated holding/program cost increase ($)"),
 })
 
 export function SimulationChartTool() {
@@ -418,7 +566,9 @@ export function SimulationChartTool() {
       return `Rendered simulation curve "${title}".`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || args?.grossRecovery == null) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || args.grossRecovery == null)
+        return <LoadingFallback label="Loading chart..." />
       const curve = simulationCurve(args.grossRecovery, args.holdingIncrease)
       const rows = curve.buffers.map((b, i) => ({
         buffer: b,
@@ -432,12 +582,36 @@ export function SimulationChartTool() {
           <ChartShell>
             <ComposedChart data={rows}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis dataKey="buffer" tick={AXIS_TICK} interval={0} angle={-14} dy={8} height={52} />
+              <XAxis
+                dataKey="buffer"
+                tick={AXIS_TICK}
+                interval={0}
+                angle={-14}
+                dy={8}
+                height={52}
+              />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="gross" name="Gross Recovery ($)" fill={SUCCESS} radius={[4, 4, 0, 0]} />
-              <Bar dataKey="holding" name="Holding Cost ($)" fill={DANGER} radius={[4, 4, 0, 0]} />
-              <Line type="monotone" dataKey="net" name="Net Benefit ($)" stroke={ACCENT} strokeWidth={3} dot={{ fill: ACCENT }} />
+              <Bar
+                dataKey="gross"
+                name="Gross Recovery ($)"
+                fill={SUCCESS}
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                dataKey="holding"
+                name="Holding Cost ($)"
+                fill={DANGER}
+                radius={[4, 4, 0, 0]}
+              />
+              <Line
+                type="monotone"
+                dataKey="net"
+                name="Net Benefit ($)"
+                stroke={ACCENT}
+                strokeWidth={3}
+                dot={{ fill: ACCENT }}
+              />
             </ComposedChart>
           </ChartShell>
         </div>
@@ -457,7 +631,7 @@ const RiskMatrixSchema = z.object({
         name: z.string().describe("Product / SKU / segment name"),
         realized: z.number().describe("Realized revenue ($)"),
         lost: z.number().describe("Lost revenue from stockouts ($)"),
-      }),
+      })
     )
     .describe("Top affected entities (max ~8)"),
 })
@@ -473,7 +647,9 @@ export function RiskMatrixChartTool() {
       return `Rendered risk matrix "${title}" with ${items.length} entries.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.items) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.items)
+        return <LoadingFallback label="Loading chart..." />
       if (args.items.length === 0) return null
       const rows = args.items.slice(0, 8)
       return (
@@ -482,11 +658,28 @@ export function RiskMatrixChartTool() {
           <ChartShell>
             <BarChart data={rows}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis dataKey="name" tick={AXIS_TICK} interval={0} angle={-18} dy={10} height={52} />
+              <XAxis
+                dataKey="name"
+                tick={AXIS_TICK}
+                interval={0}
+                angle={-18}
+                dy={10}
+                height={52}
+              />
               <YAxis tick={AXIS_TICK} />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="realized" name="Realized ($)" fill={GRID_STROKE} radius={[4, 4, 0, 0]} />
-              <Bar dataKey="lost" name="Lost ($)" fill={DANGER} radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="realized"
+                name="Realized ($)"
+                fill={GRID_STROKE}
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar
+                dataKey="lost"
+                name="Lost ($)"
+                fill={DANGER}
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ChartShell>
         </div>
@@ -505,7 +698,7 @@ const FeatureImportanceSchema = z.object({
       z.object({
         feature: z.string().describe("Feature / driver name"),
         importance: z.number().describe("Relative importance score"),
-      }),
+      })
     )
     .describe("Top model drivers (max ~8)"),
 })
@@ -521,9 +714,13 @@ export function FeatureImportanceChartTool() {
       return `Rendered feature importance "${title}" with ${features.length} features.`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.features) return <LoadingFallback label="Loading chart..." />
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.features)
+        return <LoadingFallback label="Loading chart..." />
       if (args.features.length === 0) return null
-      const rows = [...args.features].sort((a, b) => b.importance - a.importance).slice(0, 8)
+      const rows = [...args.features]
+        .sort((a, b) => b.importance - a.importance)
+        .slice(0, 8)
       return (
         <div>
           <ChartTitle title={args.title} />
@@ -531,7 +728,12 @@ export function FeatureImportanceChartTool() {
             <BarChart data={rows} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
               <XAxis type="number" tick={AXIS_TICK} />
-              <YAxis type="category" dataKey="feature" tick={AXIS_TICK} width={110} />
+              <YAxis
+                type="category"
+                dataKey="feature"
+                tick={AXIS_TICK}
+                width={110}
+              />
               <Tooltip contentStyle={TOOLTIP_STYLE} />
               <Bar dataKey="importance" fill={ACCENT} radius={[0, 4, 4, 0]} />
             </BarChart>
@@ -547,13 +749,33 @@ export function FeatureImportanceChartTool() {
 
 const NetworkSchema = z.object({
   title: z.string().describe("Title of the network graph"),
-  rows: z.array(RowSchema).describe("Rows with two entity columns forming edges (max ~300 rows)"),
-  entityACol: z.string().optional().describe("First entity column; auto-detected if omitted"),
-  entityBCol: z.string().optional().describe("Second entity column; auto-detected if omitted"),
-  weightCol: z.string().optional().describe("Edge weight column; defaults to amount or 1"),
+  rows: z
+    .array(RowSchema)
+    .describe("Rows with two entity columns forming edges (max ~300 rows)"),
+  entityACol: z
+    .string()
+    .optional()
+    .describe("First entity column; auto-detected if omitted"),
+  entityBCol: z
+    .string()
+    .optional()
+    .describe("Second entity column; auto-detected if omitted"),
+  weightCol: z
+    .string()
+    .optional()
+    .describe("Edge weight column; defaults to amount or 1"),
 })
 
-const COMMUNITY_COLORS = [ACCENT, SUCCESS, WARNING, DANGER, "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16"]
+const COMMUNITY_COLORS = [
+  ACCENT,
+  SUCCESS,
+  WARNING,
+  DANGER,
+  "#8b5cf6",
+  "#06b6d4",
+  "#ec4899",
+  "#84cc16",
+]
 
 export function NetworkGraphTool() {
   useFrontendTool({
@@ -563,12 +785,20 @@ export function NetworkGraphTool() {
     parameters: NetworkSchema,
     handler: async ({ rows, entityACol, entityBCol, weightCol }) => {
       const built = buildNetwork(rows, entityACol, entityBCol, weightCol)
-      if (!built) return "Need 3+ rows with two entity columns to build a network."
+      if (!built)
+        return "Need 3+ rows with two entity columns to build a network."
       return `Graphed ${built.nodes.length} nodes, ${built.edges.length} edges, ${built.communityCount} communities (density ${built.density}).`
     },
     render: ({ args, status }) => {
-      if (status === "inProgress" || !args?.rows) return <LoadingFallback label="Loading graph..." />
-      const built = buildNetwork(args.rows, args.entityACol, args.entityBCol, args.weightCol)
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- CopilotKit passes partial args at runtime
+      if (status === "inProgress" || !args.rows)
+        return <LoadingFallback label="Loading graph..." />
+      const built = buildNetwork(
+        args.rows,
+        args.entityACol,
+        args.entityBCol,
+        args.weightCol
+      )
       if (!built) return null
       const maxWeight = Math.max(1, ...built.edges.map((e) => e.weight))
       const nodeById = new Map(built.nodes.map((n) => [n.id, n]))
@@ -600,7 +830,9 @@ export function NetworkGraphTool() {
                     cx={n.x}
                     cy={n.y}
                     r={5 + 9 * n.centrality}
-                    fill={COMMUNITY_COLORS[n.community % COMMUNITY_COLORS.length]}
+                    fill={
+                      COMMUNITY_COLORS[n.community % COMMUNITY_COLORS.length]
+                    }
                     fillOpacity={0.85}
                     stroke="hsl(var(--background))"
                     strokeWidth={1.5}

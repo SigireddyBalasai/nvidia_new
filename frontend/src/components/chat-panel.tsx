@@ -12,11 +12,17 @@ import {
   ChevronUp,
 } from "lucide-react"
 import { useNavigate } from "@tanstack/react-router"
-import { useAgent, useCopilotKit, CopilotChatToolCallsView } from "@copilotkit/react-core/v2"
+import {
+  useAgent,
+  useCopilotKit,
+  CopilotChatToolCallsView,
+  useInterrupt,
+} from "@copilotkit/react-core/v2"
 import { useStore } from "@/lib/store"
 import { useLangGraphThreads } from "@/lib/langgraph-threads"
 import { AgentRadar } from "./agent-radar"
 import { ProgressIndicator } from "./progress-indicator"
+import { InterruptApprovalCard } from "./interrupt-approval-card"
 import { checkBackendHealth } from "@/lib/api"
 
 interface ExampleQuery {
@@ -58,7 +64,8 @@ const VERTICAL_QUERIES: Record<string, ExampleQuery[]> = {
       title: "High-Balance Inactive Accounts",
       steps: "3 Steps",
       actionText: "Run zero-shot cuDF SQL →",
-      query: "List top 10 customers with balance over $50,000 who have been inactive for 60 days",
+      query:
+        "List top 10 customers with balance over $50,000 who have been inactive for 60 days",
       category: "sql",
     },
   ],
@@ -104,12 +111,12 @@ function ThinkingMessage({ content, isLatest = false }: ThinkingMessageProps) {
   const [isExpanded, setIsExpanded] = useState(isLatest)
 
   return (
-    <div className="max-w-[80%] rounded-xl border border-amber-500/30 bg-amber-500/5 overflow-hidden">
+    <div className="max-w-[80%] overflow-hidden rounded-xl border border-amber-500/30 bg-amber-500/5">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-2 px-4 py-2.5 text-left hover:bg-amber-500/10 transition-colors"
+        className="flex w-full items-center gap-2 px-4 py-2.5 text-left transition-colors hover:bg-amber-500/10"
       >
-        <Brain size={14} className="text-amber-500 shrink-0" />
+        <Brain size={14} className="shrink-0 text-amber-500" />
         <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
           Thinking Process
         </span>
@@ -121,8 +128,8 @@ function ThinkingMessage({ content, isLatest = false }: ThinkingMessageProps) {
         )}
       </button>
       {isExpanded && (
-        <div className="px-4 pb-3 border-t border-amber-500/20">
-          <p className="text-xs text-muted-foreground whitespace-pre-wrap mt-2 leading-relaxed">
+        <div className="border-t border-amber-500/20 px-4 pb-3">
+          <p className="mt-2 text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground">
             {content}
           </p>
         </div>
@@ -148,17 +155,24 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const isLoading = agent.isRunning
   const navigate = useNavigate()
   const { threads, createThread, fetchThreadMessages } = useLangGraphThreads()
-  
+
   // Find active thread name
   const activeThread = threads.find((t) => t.id === currentSessionId)
   const threadName = activeThread?.name || "New Analysis"
 
-  const queries = VERTICAL_QUERIES[vertical] || VERTICAL_QUERIES.cbg
+  const queries = VERTICAL_QUERIES[vertical]
   const [input, setInput] = useState("")
   const [backendStatus, setBackendStatus] = useState<BackendStatus>("checking")
   const [backendError, setBackendError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [threadMessages, setThreadMessages] = useState<Array<{id: string, role: "user" | "assistant" | "reasoning", content: string, toolCalls?: any}>>([])
+  const [threadMessages, setThreadMessages] = useState<
+    Array<{
+      id: string
+      role: "user" | "assistant" | "reasoning"
+      content: string
+      toolCalls?: any
+    }>
+  >([])
 
   // Keep global processing flag in sync with agent run state
   useEffect(() => {
@@ -178,14 +192,27 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
           (m: { type?: string; content?: unknown }) =>
             (m.type === "human" || m.type === "ai" || m.type === "reasoning") &&
             typeof m.content === "string" &&
-            (m.content).trim().length > 0,
+            m.content.trim().length > 0
         )
-        .map((m: { id?: string; type: string; content: unknown; tool_calls?: unknown }) => ({
-          id: m.id || `msg-${Date.now()}`,
-          role: (m.type === "human" ? "user" : m.type === "reasoning" ? "reasoning" : "assistant"),
-          content: m.content as string,
-          toolCalls: (m as any).tool_calls,
-        }))
+        .map(
+          (m: {
+            id?: string
+            type: string
+            content: unknown
+            tool_calls?: unknown
+          }) => ({
+            id: m.id || `msg-${Date.now()}`,
+            role: (
+              m.type === "human"
+                ? "user"
+                : m.type === "reasoning"
+                  ? "reasoning"
+                  : "assistant"
+            ) as "user" | "reasoning" | "assistant",
+            content: m.content as string,
+            toolCalls: (m as any).tool_calls,
+          })
+        )
       setThreadMessages(mapped)
     }
     loadMessages()
@@ -195,9 +222,11 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
   const agentMessages = agent.messages
     .filter(
       (m) =>
-        (m.role === "user" || m.role === "assistant" || m.role === "reasoning") &&
+        (m.role === "user" ||
+          m.role === "assistant" ||
+          m.role === "reasoning") &&
         typeof m.content === "string" &&
-        m.content.trim().length > 0,
+        m.content.trim().length > 0
     )
     .map((m) => ({
       id: m.id,
@@ -207,9 +236,15 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
     }))
 
   // Use thread messages as base, append any new agent messages not already in the list
-  const messages = threadMessages.length > 0
-    ? [...threadMessages, ...agentMessages.filter((am) => !threadMessages.some((tm) => tm.id === am.id))]
-    : agentMessages
+  const messages =
+    threadMessages.length > 0
+      ? [
+          ...threadMessages,
+          ...agentMessages.filter(
+            (am) => !threadMessages.some((tm) => tm.id === am.id)
+          ),
+        ]
+      : agentMessages
 
   // Check backend health on mount
   useEffect(() => {
@@ -225,56 +260,116 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
     return () => clearInterval(interval)
   }, [])
 
+  // Handle graph-level interrupts (execute / write_file approval)
+  useInterrupt({
+    render: ({ interrupt, resolve }) => {
+      // Deepagents interrupt: metadata contains action_requests + review_configs
+      const meta = interrupt?.metadata as any
+      if (!meta?.action_requests) {
+        return <div />
+      }
+
+      const interruptData = {
+        action_requests: meta.action_requests,
+        review_configs: meta.review_configs || [],
+      }
+
+      return (
+        <div className="flex justify-start">
+          <InterruptApprovalCard
+            interrupt={interruptData}
+            onApprove={() =>
+              resolve({
+                decisions: interruptData.action_requests.map(() => ({
+                  type: "approve",
+                })),
+              })
+            }
+            onReject={(message) =>
+              resolve({
+                decisions: interruptData.action_requests.map(() => ({
+                  type: "reject",
+                  message: message || "User rejected this action.",
+                })),
+              })
+            }
+            onRespond={(message) =>
+              resolve({
+                decisions: interruptData.action_requests.map(() => ({
+                  type: "respond",
+                  message,
+                })),
+              })
+            }
+          />
+        </div>
+      )
+    },
+  })
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || agent.isRunning) return
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!content.trim() || agent.isRunning) return
 
-    // Check backend before sending
-    const healthCheck = await checkBackendHealth()
-    if (healthCheck.status === "error") {
-      setBackendStatus("error")
-      setBackendError(healthCheck.message)
-      return
-    }
-
-    // Create a new thread if none is active
-    let activeThreadId = currentSessionId
-    if (!activeThreadId) {
-      activeThreadId = await createThread()
-      if (!activeThreadId) {
+      // Check backend before sending
+      const healthCheck = await checkBackendHealth()
+      if (healthCheck.status === "error") {
         setBackendStatus("error")
-        setBackendError("Failed to create thread")
+        setBackendError(healthCheck.message)
         return
       }
-      setCurrentSessionId(activeThreadId)
-      navigate({ to: "/thread/$threadId", params: { threadId: activeThreadId } })
-    }
 
-    // Sync active thread id onto agent before sending
-    agent.threadId = activeThreadId
+      // Create a new thread if none is active
+      let activeThreadId = currentSessionId
+      if (!activeThreadId) {
+        activeThreadId = await createThread()
+        if (!activeThreadId) {
+          setBackendStatus("error")
+          setBackendError("Failed to create thread")
+          return
+        }
+        setCurrentSessionId(activeThreadId)
+        navigate({
+          to: "/thread/$threadId",
+          params: { threadId: activeThreadId },
+        })
+      }
 
-    setInput("")
-    setTimeout(scrollToBottom, 50)
+      // Sync active thread id onto agent before sending
+      agent.threadId = activeThreadId
 
-    try {
-      agent.addMessage({
-        id: `user-${Date.now()}`,
-        role: "user",
-        content: content.trim(),
-      })
-      await copilotkit.runAgent({ agent })
+      setInput("")
       setTimeout(scrollToBottom, 50)
-    } catch (err) {
-      console.error("Failed to send message:", err)
-      // Re-check backend status
-      const recheck = await checkBackendHealth()
-      setBackendStatus(recheck.status)
-      setBackendError(recheck.status === "error" ? recheck.message : null)
-    }
-  }, [agent, copilotkit, currentSessionId, createThread, setCurrentSessionId, navigate])
+
+      try {
+        agent.addMessage({
+          id: `user-${Date.now()}`,
+          role: "user",
+          content: content.trim(),
+        })
+        await copilotkit.runAgent({ agent })
+        setTimeout(scrollToBottom, 50)
+      } catch (err) {
+        console.error("Failed to send message:", err)
+        // Re-check backend status
+        const recheck = await checkBackendHealth()
+        setBackendStatus(recheck.status)
+        setBackendError(recheck.status === "error" ? recheck.message : null)
+      }
+    },
+    [
+      agent,
+      copilotkit,
+      currentSessionId,
+      createThread,
+      setCurrentSessionId,
+      navigate,
+    ]
+  )
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -307,26 +402,30 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
 
       {/* Backend Error Banner */}
       {backendStatus === "error" && (
-        <div className="mx-4 mt-4 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+        <div className="mx-4 mt-4 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
           <div className="flex items-start gap-3">
-            <AlertCircle size={16} className="text-destructive mt-0.5 shrink-0" />
-            <div className="flex-1 min-w-0">
+            <AlertCircle
+              size={16}
+              className="mt-0.5 shrink-0 text-destructive"
+            />
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-destructive">
                 Backend Unreachable
               </p>
-              <p className="text-[11px] text-destructive/80 mt-0.5">
-                {backendError || "Cannot connect to the LangGraph agent server."}
+              <p className="mt-0.5 text-[11px] text-destructive/80">
+                {backendError ||
+                  "Cannot connect to the LangGraph agent server."}
               </p>
-              <p className="text-[10px] text-muted-foreground mt-1">
+              <p className="mt-1 text-[10px] text-muted-foreground">
                 Start the agent server with:{" "}
-                <code className="px-1 py-0.5 rounded bg-muted text-[10px]">
+                <code className="rounded bg-muted px-1 py-0.5 text-[10px]">
                   uv run langgraph dev --port 2024
                 </code>
               </p>
             </div>
             <button
               onClick={handleRetryConnection}
-              className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
+              className="rounded-lg p-1.5 text-destructive transition-colors hover:bg-destructive/10"
               title="Retry connection"
             >
               <RefreshCw size={14} />
@@ -336,14 +435,17 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       )}
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.length === 0 && backendStatus === "ok" && (
-          <div className="text-center py-12">
-            <BarChart3 size={48} className="mx-auto mb-4 text-muted-foreground/30" />
-            <h3 className="text-sm font-semibold text-foreground mb-2">
+          <div className="py-12 text-center">
+            <BarChart3
+              size={48}
+              className="mx-auto mb-4 text-muted-foreground/30"
+            />
+            <h3 className="mb-2 text-sm font-semibold text-foreground">
               {threadName}
             </h3>
-            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            <p className="mx-auto max-w-sm text-xs text-muted-foreground">
               Ask a question about your data or select an example query below.
             </p>
           </div>
@@ -351,18 +453,20 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
 
         {messages.map((msg, index) => {
           if (msg.role === "reasoning") {
-            const isLatestReasoning = index === messages.length - 1 || 
-              (index < messages.length - 1 && messages[index + 1]?.role !== "reasoning")
+            const isLatestReasoning =
+              index === messages.length - 1 ||
+              (index < messages.length - 1 &&
+                messages[index + 1]?.role !== "reasoning")
             return (
               <div key={msg.id} className="flex justify-start">
-                <ThinkingMessage 
-                  content={msg.content} 
+                <ThinkingMessage
+                  content={msg.content}
                   isLatest={isLatestReasoning && isLoading}
                 />
               </div>
             )
           }
-          
+
           return (
             <div
               key={msg.id}
@@ -372,12 +476,15 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
                 className={`max-w-[80%] rounded-xl px-4 py-3 ${
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground border border-border"
+                    : "border border-border bg-secondary text-secondary-foreground"
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 {msg.role === "assistant" && (msg as any).toolCalls && (
-                  <CopilotChatToolCallsView message={msg as any} messages={messages as any} />
+                  <CopilotChatToolCallsView
+                    message={msg as any}
+                    messages={messages}
+                  />
                 )}
               </div>
             </div>
@@ -386,10 +493,12 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
 
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-secondary border border-border rounded-xl px-4 py-3">
+            <div className="rounded-xl border border-border bg-secondary px-4 py-3">
               <div className="flex items-center gap-2">
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-sm text-muted-foreground">Thinking...</span>
+                <div className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+                <span className="text-sm text-muted-foreground">
+                  Thinking...
+                </span>
               </div>
             </div>
           </div>
@@ -399,7 +508,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t border-border">
+      <div className="border-t border-border p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
@@ -411,12 +520,12 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
                 : `Message ${threadName}...`
             }
             disabled={isLoading || backendStatus === "error"}
-            className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all disabled:opacity-50"
+            className="flex-1 rounded-lg border border-border bg-background px-4 py-2.5 text-sm transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/30 focus:outline-none disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim() || backendStatus === "error"}
-            className="px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send size={16} />
           </button>
@@ -424,8 +533,8 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
       </div>
 
       {/* Example Queries */}
-      <div className="p-3 border-t border-border bg-sidebar/50">
-        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+      <div className="border-t border-border bg-sidebar/50 p-3">
+        <p className="mb-2 text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
           Example Queries
         </p>
         <div className="space-y-2">
@@ -437,16 +546,22 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
                 key={i}
                 onClick={() => handleQueryClick(q.query)}
                 disabled={isLoading || backendStatus === "error"}
-                className="w-full text-left p-2.5 rounded-lg border border-border/60 hover:bg-accent/50 transition-colors group disabled:opacity-50"
+                className="group w-full rounded-lg border border-border/60 p-2.5 text-left transition-colors hover:bg-accent/50 disabled:opacity-50"
               >
-                <div className="flex items-center justify-between mb-1">
+                <div className="mb-1 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Icon size={12} className={color} />
-                    <span className="text-xs font-semibold text-foreground">{q.title}</span>
+                    <span className="text-xs font-semibold text-foreground">
+                      {q.title}
+                    </span>
                   </div>
-                  <span className="text-[9px] text-muted-foreground">{q.steps}</span>
+                  <span className="text-[9px] text-muted-foreground">
+                    {q.steps}
+                  </span>
                 </div>
-                <p className="text-[10px] text-primary font-medium">{q.actionText}</p>
+                <p className="text-[10px] font-medium text-primary">
+                  {q.actionText}
+                </p>
               </button>
             )
           })}

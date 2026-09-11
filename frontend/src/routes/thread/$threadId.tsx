@@ -6,7 +6,12 @@ import { Sidebar } from "@/components/sidebar"
 import { ChatPanel } from "@/components/chat-panel"
 import { InsightsPanel } from "@/components/insights-panel"
 import { DataForgeChartTools } from "@/components/dataforge-charts"
-import { BarChartTool, PieChartTool, LineChartTool, TableTool } from "@/components/copilot-tools"
+import {
+  BarChartTool,
+  PieChartTool,
+  LineChartTool,
+  TableTool,
+} from "@/components/copilot-tools"
 import { useLangGraphThreads } from "@/lib/langgraph-threads"
 
 export const Route = createFileRoute("/thread/$threadId")({
@@ -64,8 +69,12 @@ function ThreadView() {
       <div className="flex flex-1 overflow-hidden">
         {sidebarOpen && panelLayout === "split" && <Sidebar />}
         <main className="flex flex-1 overflow-hidden">
-          {panelLayout !== "visuals" && <ChatPanel isFullscreen={panelLayout === "chat"} />}
-          {panelLayout !== "chat" && <InsightsPanel isFullscreen={panelLayout === "visuals"} />}
+          {panelLayout !== "visuals" && (
+            <ChatPanel isFullscreen={panelLayout === "chat"} />
+          )}
+          {panelLayout !== "chat" && (
+            <InsightsPanel isFullscreen={panelLayout === "visuals"} />
+          )}
         </main>
       </div>
     </div>

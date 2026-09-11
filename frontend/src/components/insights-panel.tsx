@@ -1,5 +1,5 @@
-import { useStore   } from "@/lib/store"
-import type {Visualization, TableData} from "@/lib/store";
+import { useStore } from "@/lib/store"
+import type { Visualization, TableData } from "@/lib/store"
 import { BarChart3, TrendingUp, PieChart, Activity, Table } from "lucide-react"
 import {
   BarChart,
@@ -60,21 +60,23 @@ export function InsightsPanel({ isFullscreen = false }: InsightsPanelProps) {
       nameKey: (c as any).nameKey,
       valueKey: (c as any).valueKey,
     }))
-  
+
   const tables: TableData[] = charts.filter(isTableData)
 
   return (
     <div
-      className={`flex flex-col bg-card overflow-hidden ${
+      className={`flex flex-col overflow-hidden bg-card ${
         isFullscreen ? "flex-1" : "w-1/2 min-w-[400px]"
       }`}
     >
       {/* Panel Header */}
-      <div className="p-4 border-b border-border">
+      <div className="border-b border-border p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Activity size={16} className="text-primary" />
-            <h3 className="text-sm font-semibold text-foreground">Insights & Visuals</h3>
+            <h3 className="text-sm font-semibold text-foreground">
+              Insights & Visuals
+            </h3>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[10px] text-muted-foreground">
@@ -85,28 +87,32 @@ export function InsightsPanel({ isFullscreen = false }: InsightsPanelProps) {
       </div>
 
       {/* Charts Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {parsedCharts.length === 0 && !isProcessing && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-12">
+          <div className="flex h-full flex-col items-center justify-center py-12 text-center">
             <BarChart3 size={48} className="mb-4 text-muted-foreground/30" />
-            <h4 className="text-sm font-semibold text-foreground mb-2">
+            <h4 className="mb-2 text-sm font-semibold text-foreground">
               No Visualizations Yet
             </h4>
-            <p className="text-xs text-muted-foreground max-w-sm">
-              Ask a question that requires data analysis. Charts and insights will appear here.
+            <p className="max-w-sm text-xs text-muted-foreground">
+              Ask a question that requires data analysis. Charts and insights
+              will appear here.
             </p>
           </div>
         )}
 
         {isProcessing && parsedCharts.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-12">
+          <div className="flex h-full flex-col items-center justify-center py-12 text-center">
             <div className="relative mb-4">
-              <BarChart3 size={48} className="text-muted-foreground/30 animate-pulse" />
+              <BarChart3
+                size={48}
+                className="animate-pulse text-muted-foreground/30"
+              />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
               </div>
             </div>
-            <h4 className="text-sm font-semibold text-foreground mb-2">
+            <h4 className="mb-2 text-sm font-semibold text-foreground">
               Generating Insights...
             </h4>
             <p className="text-xs text-muted-foreground">
@@ -126,11 +132,11 @@ export function InsightsPanel({ isFullscreen = false }: InsightsPanelProps) {
         {/* Response Summary */}
         {response && (
           <div className="rounded-xl border border-border bg-card p-4">
-            <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+            <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
               <TrendingUp size={14} className="text-primary" />
               Analysis Summary
             </h4>
-            <div className="text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            <div className="text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground">
               {response}
             </div>
           </div>
@@ -143,17 +149,26 @@ export function InsightsPanel({ isFullscreen = false }: InsightsPanelProps) {
 function ChartCard({ chart }: { chart: ChartData }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-        {chart.type === "bar" && <BarChart3 size={14} className="text-primary" />}
-        {chart.type === "line" && <TrendingUp size={14} className="text-primary" />}
-        {chart.type === "pie" && <PieChart size={14} className="text-primary" />}
+      <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+        {chart.type === "bar" && (
+          <BarChart3 size={14} className="text-primary" />
+        )}
+        {chart.type === "line" && (
+          <TrendingUp size={14} className="text-primary" />
+        )}
+        {chart.type === "pie" && (
+          <PieChart size={14} className="text-primary" />
+        )}
         {chart.title}
       </h4>
       <div className="h-[250px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           {chart.type === "bar" ? (
             <BarChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="hsl(var(--border))"
+              />
               <XAxis
                 dataKey={chart.xKey || "name"}
                 tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
@@ -177,7 +192,10 @@ function ChartCard({ chart }: { chart: ChartData }) {
             </BarChart>
           ) : chart.type === "line" ? (
             <LineChart data={chart.data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="hsl(var(--border))"
+              />
               <XAxis
                 dataKey={chart.xKey || "name"}
                 tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
@@ -240,7 +258,7 @@ function ChartCard({ chart }: { chart: ChartData }) {
 function TableCard({ table }: { table: TableData }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
-      <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+      <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
         <Table size={14} className="text-primary" />
         {table.title}
       </h4>
@@ -262,7 +280,7 @@ function TableCard({ table }: { table: TableData }) {
             {table.rows.map((row, i) => (
               <tr
                 key={i}
-                className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                className="border-b border-border/50 transition-colors hover:bg-muted/30"
               >
                 {table.columns.map((col) => (
                   <td key={col} className="px-3 py-2 text-foreground">
