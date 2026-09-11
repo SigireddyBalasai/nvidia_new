@@ -1,4 +1,3 @@
-"use client"
 
 import {
   useFrontendTool,
@@ -43,11 +42,12 @@ export function PieChartTool() {
       "Render a pie chart inline. Each item needs a name (label) and value (number). Percentages are calculated automatically.",
     parameters: PieChartSchema,
     handler: async ({ title, data }) => {
-      const { charts, setCharts } = useStore.getState()
-      setCharts([
-        ...charts,
-        { type: "pie", title, data, nameKey: "name", valueKey: "value" },
-      ])
+      useStore.setState((s) => ({
+        charts: [
+          ...s.charts,
+          { type: "pie", title, data, nameKey: "name", valueKey: "value" },
+        ],
+      }))
       return `Rendered pie chart "${title}" with ${data.length} slices.`
     },
     render: ({ args, status }) => {
@@ -97,11 +97,12 @@ export function BarChartTool() {
       "Render a bar chart inline. Each item needs a name (x-axis label) and value (bar height).",
     parameters: BarChartSchema,
     handler: async ({ title, data }) => {
-      const { charts, setCharts } = useStore.getState()
-      setCharts([
-        ...charts,
-        { type: "bar", title, data, xKey: "name", yKey: "value" },
-      ])
+      useStore.setState((s) => ({
+        charts: [
+          ...s.charts,
+          { type: "bar", title, data, xKey: "name", yKey: "value" },
+        ],
+      }))
       return `Rendered bar chart "${title}" with ${data.length} bars.`
     },
     render: ({ args, status }) => {
@@ -174,11 +175,12 @@ export function LineChartTool() {
       "Render a line chart inline. Each item needs a name (x-axis label) and value (y-axis point).",
     parameters: LineChartSchema,
     handler: async ({ title, data }) => {
-      const { charts, setCharts } = useStore.getState()
-      setCharts([
-        ...charts,
-        { type: "line", title, data, xKey: "name", yKey: "value" },
-      ])
+      useStore.setState((s) => ({
+        charts: [
+          ...s.charts,
+          { type: "line", title, data, xKey: "name", yKey: "value" },
+        ],
+      }))
       return `Rendered line chart "${title}" with ${data.length} points.`
     },
     render: ({ args, status }) => {
@@ -251,7 +253,6 @@ export function TableTool() {
       "Render a data table inline. Provide column headers and row data as arrays of strings.",
     parameters: TableSchema,
     handler: async ({ title, columns, rows }) => {
-      const { charts, setCharts } = useStore.getState()
       const objectRows = rows.map((row) => {
         const obj: Record<string, unknown> = {}
         columns.forEach((col, i) => {
@@ -259,10 +260,12 @@ export function TableTool() {
         })
         return obj
       })
-      setCharts([
-        ...charts,
-        { type: "table", title, columns, rows: objectRows },
-      ])
+      useStore.setState((s) => ({
+        charts: [
+          ...s.charts,
+          { type: "table", title, columns, rows: objectRows },
+        ],
+      }))
       return `Rendered table "${title}" with ${columns.length} columns and ${rows.length} rows.`
     },
     render: ({ args, status }) => {

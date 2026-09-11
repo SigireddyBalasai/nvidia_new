@@ -1,336 +1,222 @@
-"""Sandbox backend using local Podman containers via the Podman Python SDK."""
+"""OpenShell sandbox backend for deepagents.
+
+Implements SandboxBackendProtocol backed by an OpenShell sandbox.
+The OpenShell gateway is selected from the active cluster config
+(~/.config/openshell/active_gateway) or OPENSHELL_GATEWAY env var.
+
+Sandbox selection (controlled via env vars):
+  OPENSHELL_SANDBOX_NAME  Connect to a pre-existing named sandbox.
+                          Create one with: openshell sandbox create --name <name> --keep
+  (not set)               Create a fresh sandbox for this run.
+
+Gateway Setup (required for sandbox isolation):
+
+  1. Install the OpenShell CLI:
+     - Linux/macOS: curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/main/install.sh | sh
+     - Windows: Use WSL 2 or Docker Desktop
+
+  2. Start the gateway (requires Docker or Podman running):
+     openshell gateway start
+
+  3. The gateway writes connection info to ~/.config/openshell/active_gateway.
+     The Python SDK reads this automatically via SandboxClient.from_active_cluster().
+
+  Alternative: Set OPENSHELL_GATEWAY env var to connect to a remote gateway:
+     export OPENSHELL_GATEWAY=grpc://host:port
+
+  If no gateway is available, the backend falls back to local filesystem
+  execution (no sandbox isolation) for development/testing.
+
+Usage:
+  # With gateway (sandboxed):
+  openshell gateway start  # in one terminal
+  make serve               # in another terminal
+
+  # Without gateway (local fallback):
+  make serve               # runs with FilesystemBackend
+"""
 
 from __future__ import annotations
 
 import asyncio
-import io
-import os
-import tarfile
-import uuid
-import weakref
+import base64
 import logging
+import os
+import shlex
+from typing import Any
 
+from deepagents.backends import CompositeBackend, FilesystemBackend
 from deepagents.backends.protocol import (
     ExecuteResponse,
     FileDownloadResponse,
     FileUploadResponse,
-    WriteResult,
 )
 from deepagents.backends.sandbox import BaseSandbox
-from podman import PodmanClient
+from openshell import SandboxClient, SandboxSession
 
-DEFAULT_CONTAINER_IMAGE = "python:3.11-slim"
-DEFAULT_TIMEOUT = 300
-DEFAULT_SOCKET_URL = "unix:///run/user/1000/podman/podman.sock"
-
-_backends: dict[str, PodmanBackend] = {}
+SANDBOX_NAME_ENV = "OPENSHELL_SANDBOX_NAME"
 
 logger = logging.getLogger(__name__)
 
 
-def _cleanup_container(client: PodmanClient, container) -> None:
-    """Best-effort stop + remove a Podman container and close the client."""
-    try:
-        container.reload()
-        if container.status == "running":
-            container.stop(timeout=5)
-    except Exception:  # noqa: BLE001,S110
-        pass
-    try:
-        container.remove(force=True)
-    except Exception:  # noqa: BLE001,S110
-        pass
-    try:
-        client.close()
-    except Exception:  # noqa: BLE001,S110
-        pass
+class OpenShellBackend(BaseSandbox):
+    """deepagents SandboxBackendProtocol backed by an OpenShell sandbox.
 
+    Wraps a live SandboxSession. All file operations (read, write, edit,
+    grep, glob, ls) are inherited from BaseSandbox and executed as shell
+    commands via execute(). Only execute(), upload_files(), and
+    download_files() need concrete implementations.
 
-class PodmanBackend(BaseSandbox):
-    """Local Podman container sandbox backend using the Podman Python SDK.
-
-    Runs commands inside a Podman container via ``container.exec_run()``
-    and transfers files via ``put_archive`` / ``get_archive``.
-
-    The container is automatically stopped and removed when this object
-    is garbage collected (via ``weakref.finalize``).
+    All public methods are async-native: blocking SandboxSession calls are
+    offloaded to a thread pool via asyncio.to_thread() to avoid blocking the
+    event loop.
     """
 
     def __init__(
         self,
-        client: PodmanClient,
-        container,
+        session: SandboxSession,
         *,
-        timeout: int = DEFAULT_TIMEOUT,
+        default_timeout: int = 30 * 60,
     ) -> None:
-        self._client = client
-        self._container = container
-        self._default_timeout = timeout
-        self._finalizer = weakref.finalize(self, _cleanup_container, client, container)
-
-    def __del__(self) -> None:
-        if self._finalizer.is_alive():
-            self._finalizer()
+        self._session = session
+        self._default_timeout = default_timeout
 
     @property
     def id(self) -> str:
-        return self._container.id
+        return self._session.id
 
-    def execute(self, command: str, *, timeout: int | None = None) -> ExecuteResponse:
-        logger.debug("Executing command: %s", command)
-        effective_timeout = timeout if timeout is not None else self._default_timeout
-
-        exit_code, output = self._container.exec_run(
-            ["sh", "-c", command],
-            demux=True,
-        )
-
-        if isinstance(output, tuple):
-            stdout_text = (output[0] or b"").decode("utf-8", errors="replace")
-            stderr_text = (output[1] or b"").decode("utf-8", errors="replace")
-        else:
-            stdout_text = (output or b"").decode("utf-8", errors="replace")
-            stderr_text = ""
-
-        output_str = stdout_text
-        if stderr_text:
-            output_str = f"{stdout_text}\n{stderr_text}" if stdout_text else stderr_text
-
-        logger.debug(
-            "Command exit_code=%s output=%s",
-            exit_code,
-            output_str[:200] if output_str else "",
-        )
-
-        return ExecuteResponse(
-            output=output_str,
-            exit_code=exit_code or 0,
-            truncated=False,
-        )
-
-    async def aexecute(
-        self, command: str, *, timeout: int | None = None
+    async def execute(
+        self,
+        command: str,
+        *,
+        timeout: int | None = None,
     ) -> ExecuteResponse:
+        """Run a shell command in the OpenShell sandbox (non-blocking)."""
         effective_timeout = timeout if timeout is not None else self._default_timeout
 
-        def _run():
-            exit_code, output = self._container.exec_run(
-                ["sh", "-c", command],
-                demux=True,
+        def _sync() -> ExecuteResponse:
+            result = self._session.exec(
+                ["bash", "-c", command],
+                timeout_seconds=effective_timeout,
             )
-            return exit_code, output
-
-        try:
-            exit_code, (stdout, stderr) = await asyncio.wait_for(
-                asyncio.to_thread(_run), effective_timeout
-            )
-        except TimeoutError:
+            output = result.stdout
+            if result.stderr:
+                output = f"{output}\n{result.stderr}" if output else result.stderr
             return ExecuteResponse(
-                output=f"Command timed out after {effective_timeout}s",
-                exit_code=124,
+                output=output,
+                exit_code=result.exit_code,
                 truncated=False,
             )
 
-        stdout_text = (stdout or b"").decode("utf-8", errors="replace")
-        stderr_text = (stderr or b"").decode("utf-8", errors="replace")
-        output = stdout_text
-        if stderr_text:
-            output = f"{output}\n{stderr_text}" if output else stderr_text
+        return await asyncio.to_thread(_sync)
 
-        return ExecuteResponse(
-            output=output,
-            exit_code=exit_code or 0,
-            truncated=False,
-        )
-
-    async def awrite(self, file_path: str, content: str) -> WriteResult:
-        try:
-            file_dir = os.path.dirname(file_path) or "/"
-            file_name = os.path.basename(file_path)
-
-            # Build a tar archive in memory with the file
-            buf = io.BytesIO()
-            with tarfile.open(fileobj=buf, mode="w") as tar:
-                data = content.encode("utf-8")
-                info = tarfile.TarInfo(name=file_name)
-                info.size = len(data)
-                tar.addfile(info, io.BytesIO(data))
-            buf.seek(0)
-
-            def _put():
-                # put_archive writes into the directory, so use the parent dir
-                self._container.put_archive(file_dir, buf)
-
-            await asyncio.to_thread(_put)
-            return WriteResult(path=file_path, files_update=None)
-        except Exception as e:  # noqa: BLE001
-            return WriteResult(error=f"Failed to write file '{file_path}': {e}")
-
-    async def adownload_files(self, paths: list[str]) -> list[FileDownloadResponse]:
-        responses: list[FileDownloadResponse] = []
-        for path in paths:
-            try:
-
-                def _get(p=path):
-                    stream, _ = self._container.get_archive(p)
-                    return b"".join(stream)
-
-                tar_data = await asyncio.to_thread(_get)
-
-                # Extract file content from tar
-                buf = io.BytesIO(tar_data)
-                with tarfile.open(fileobj=buf, mode="r") as tar:
-                    members = tar.getmembers()
-                    if members:
-                        f = tar.extractfile(members[0])
-                        content = f.read() if f else b""
-                    else:
-                        content = b""
-
-                responses.append(
-                    FileDownloadResponse(path=path, content=content, error=None)
-                )
-            except Exception as e:  # noqa: BLE001
-                responses.append(
-                    FileDownloadResponse(path=path, content=b"", error=str(e))
-                )
-        return responses
-
-    async def aupload_files(
+    async def upload_files(
         self, files: list[tuple[str, bytes]]
     ) -> list[FileUploadResponse]:
-        responses: list[FileUploadResponse] = []
-        for path, content in files:
-            try:
-                file_dir = os.path.dirname(path) or "/"
-                file_name = os.path.basename(path)
+        """Upload files to the sandbox by piping raw bytes over stdin (non-blocking)."""
 
-                buf = io.BytesIO()
-                with tarfile.open(fileobj=buf, mode="w") as tar:
-                    info = tarfile.TarInfo(name=file_name)
-                    info.size = len(content)
-                    tar.addfile(info, io.BytesIO(content))
-                buf.seek(0)
-
-                def _put(d=file_dir, b=buf):
-                    self._container.put_archive(d, b)
-
-                await asyncio.to_thread(_put)
-                responses.append(FileUploadResponse(path=path, error=None))
-            except Exception as e:  # noqa: BLE001
-                responses.append(FileUploadResponse(path=path, error=str(e)))
-        return responses
-
-    def write(self, file_path: str, content: str) -> WriteResult:
-        try:
-            file_dir = os.path.dirname(file_path) or "/"
-            file_name = os.path.basename(file_path)
-
-            # Build a tar archive in memory with the file
-            buf = io.BytesIO()
-            with tarfile.open(fileobj=buf, mode="w") as tar:
-                data = content.encode("utf-8")
-                info = tarfile.TarInfo(name=file_name)
-                info.size = len(data)
-                tar.addfile(info, io.BytesIO(data))
-            buf.seek(0)
-
-            self._container.put_archive(file_dir, buf)
-            return WriteResult(path=file_path, files_update=None)
-        except Exception as e:  # noqa: BLE001
-            logger.error("Failed to write file '%s': %s", file_path, e)
-            return WriteResult(error=f"Failed to write file '{file_path}': {e}")
-
-    def download_files(self, paths: list[str]) -> list[FileDownloadResponse]:
-        responses: list[FileDownloadResponse] = []
-        for path in paths:
-            try:
-                stream, _ = self._container.get_archive(path)
-                tar_data = b"".join(stream)
-
-                # Extract file content from tar
-                buf = io.BytesIO(tar_data)
-                with tarfile.open(fileobj=buf, mode="r") as tar:
-                    members = tar.getmembers()
-                    if members:
-                        f = tar.extractfile(members[0])
-                        content = f.read() if f else b""
+        def _sync() -> list[FileUploadResponse]:
+            responses: list[FileUploadResponse] = []
+            for path, content in files:
+                try:
+                    parent = shlex.quote(os.path.dirname(path) or ".")
+                    dest = shlex.quote(path)
+                    result = self._session.exec(
+                        ["bash", "-c", f"mkdir -p {parent} && cat > {dest}"],
+                        stdin=content,
+                    )
+                    if result.exit_code != 0:
+                        responses.append(
+                            FileUploadResponse(path=path, error="permission_denied")
+                        )
                     else:
-                        content = b""
+                        responses.append(FileUploadResponse(path=path, error=None))
+                except Exception:  # noqa: BLE001
+                    responses.append(
+                        FileUploadResponse(path=path, error="permission_denied")
+                    )
+            return responses
 
-                responses.append(
-                    FileDownloadResponse(path=path, content=content, error=None)
-                )
-            except Exception as e:  # noqa: BLE001
-                logger.error("Failed to download file '%s': %s", path, e)
-                responses.append(
-                    FileDownloadResponse(path=path, content=b"", error=str(e))
-                )
-        return responses
+        return await asyncio.to_thread(_sync)
 
-    def upload_files(self, files: list[tuple[str, bytes]]) -> list[FileUploadResponse]:
-        responses: list[FileUploadResponse] = []
-        for path, content in files:
-            try:
-                file_dir = os.path.dirname(path) or "/"
-                file_name = os.path.basename(path)
+    async def download_files(
+        self, paths: list[str]
+    ) -> list[FileDownloadResponse]:
+        """Download files from the sandbox via base64 encoding (non-blocking)."""
 
-                buf = io.BytesIO()
-                with tarfile.open(fileobj=buf, mode="w") as tar:
-                    info = tarfile.TarInfo(name=file_name)
-                    info.size = len(content)
-                    tar.addfile(info, io.BytesIO(content))
-                buf.seek(0)
+        def _sync() -> list[FileDownloadResponse]:
+            responses: list[FileDownloadResponse] = []
+            for path in paths:
+                try:
+                    result = self._session.exec(["base64", path])
+                    if result.exit_code != 0:
+                        responses.append(
+                            FileDownloadResponse(
+                                path=path, content=None, error="file_not_found"
+                            )
+                        )
+                    else:
+                        content = base64.b64decode(result.stdout.strip())
+                        responses.append(
+                            FileDownloadResponse(path=path, content=content, error=None)
+                        )
+                except Exception:  # noqa: BLE001
+                    responses.append(
+                        FileDownloadResponse(
+                            path=path, content=None, error="file_not_found"
+                        )
+                    )
+            return responses
 
-                self._container.put_archive(file_dir, buf)
-                responses.append(FileUploadResponse(path=path, error=None))
-            except Exception as e:  # noqa: BLE001
-                logger.error("Failed to upload file '%s': %s", path, e)
-                responses.append(FileUploadResponse(path=path, error=str(e)))
-        return responses
-
-
-async def _start_container(client: PodmanClient, image: str):
-    """Create and start a Podman container, returning the container object."""
-    name = f"deep-agent-{uuid.uuid4().hex[:8]}"
-
-    def _create():
-        # Pull image if not available locally
-        try:
-            client.images.get(image)
-        except Exception:  # noqa: BLE001
-            client.images.pull(image)
-        container = client.containers.create(
-            image,
-            command=["sleep", "infinity"],
-            name=name,
-        )
-        container.start()
-        return container
-
-    return await asyncio.to_thread(_create)
+        return await asyncio.to_thread(_sync)
 
 
-async def get_or_create_sandbox(thread_id: str) -> PodmanBackend:
-    """Get a cached sandbox for this thread, or create a new one."""
-    if backend := _backends.get(thread_id):
-        return backend
+async def create_backend(runtime: Any) -> CompositeBackend:
+    """Backend factory: OpenShell sandbox + filesystem for memory/skills.
 
-    socket_url = os.environ.get("PODMAN_SOCKET_URL", DEFAULT_SOCKET_URL)
-    image = os.environ.get("SANDBOX_TEMPLATE_IMAGE", DEFAULT_CONTAINER_IMAGE)
+    Sandbox selection:
+    - If OPENSHELL_SANDBOX_NAME is set: connect to that existing named sandbox.
+      Pre-create one with: openshell sandbox create --name <name> --keep
+    - Otherwise: create a fresh sandbox for this run and wait for it to be ready.
 
-    client = PodmanClient(base_url=socket_url)
-    container = await _start_container(client, image)
-    backend = PodmanBackend(client, container)
-    _backends[thread_id] = backend
-    return backend
+    The active OpenShell gateway is resolved from:
+    1. OPENSHELL_GATEWAY env var
+    2. ~/.config/openshell/active_gateway (set by: openshell gateway select <name>)
 
+    If no gateway is configured, falls back to a local filesystem backend
+    (no sandbox isolation) so the agent can still function for development.
 
-async def cleanup_sandbox(thread_id: str) -> None:
-    """Explicitly stop and remove the sandbox for a thread.
-
-    Safe to call even if thread_id is not cached.
+    Memory and skills live on the local filesystem (FilesystemBackend) so
+    changes persist across restarts and can be committed back to git.
     """
-    backend = _backends.pop(thread_id, None)
-    if backend is not None:
-        backend._finalizer()
+    try:
+        client = await asyncio.to_thread(SandboxClient.from_active_cluster)
+
+        sandbox_name = os.environ.get(SANDBOX_NAME_ENV)
+        if sandbox_name:
+            ref = await asyncio.to_thread(client.get, sandbox_name)
+        else:
+            ref = await asyncio.to_thread(client.create)
+            ref = await asyncio.to_thread(client.wait_ready, ref.name)
+
+        session = SandboxSession(client, ref)
+
+        return CompositeBackend(
+            default=OpenShellBackend(session),
+            routes={
+                "/memory/": FilesystemBackend(root_dir="./src", virtual_mode=True),
+                "/skills/": FilesystemBackend(root_dir="./skills", virtual_mode=True),
+            },
+        )
+    except Exception as e:  # noqa: BLE001
+        logger.warning(
+            "OpenShell gateway not available (%s), falling back to local backend",
+            e,
+        )
+        return CompositeBackend(
+            default=FilesystemBackend(root_dir=".", virtual_mode=False),
+            routes={
+                "/memory/": FilesystemBackend(root_dir="./src", virtual_mode=True),
+                "/skills/": FilesystemBackend(root_dir="./skills", virtual_mode=True),
+            },
+        )

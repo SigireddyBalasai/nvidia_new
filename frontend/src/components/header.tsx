@@ -9,9 +9,8 @@ import {
 } from "lucide-react"
 import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@/lib/store"
-import type { Vertical } from "@/lib/store"
 
-const VERTICALS: { id: Vertical; label: string; emoji: string }[] = [
+const VERTICALS: { id: string; label: string; emoji: string }[] = [
   { id: "cbg", label: "Consumer Goods", emoji: "🛒" },
   { id: "bfsi", label: "Banking & Finance", emoji: "🏦" },
   { id: "lshc", label: "Life Sciences", emoji: "🧬" },

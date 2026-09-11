@@ -13,7 +13,6 @@ import {
 import { useNavigate } from "@tanstack/react-router"
 import { useStore } from "@/lib/store"
 import { useLangGraphThreads } from "@/lib/langgraph-threads"
-import type { SidebarThread } from "@/lib/langgraph-threads"
 import { useCopilotChatConfiguration } from "@copilotkit/react-core/v2"
 
 export function Sidebar() {
@@ -175,7 +174,7 @@ function ThreadItem({
   onDelete,
   onRename,
 }: {
-  thread: SidebarThread
+  thread: { id: string; name: string; archived: boolean; createdAt: number; updatedAt: number; lastRunAt: number }
   active: boolean
   onClick: () => void
   onDelete: () => void

@@ -1,5 +1,4 @@
 import { useStore } from "@/lib/store"
-import type { Visualization, TableData } from "@/lib/store"
 import { BarChart3, TrendingUp, PieChart, Activity, Table } from "lucide-react"
 import {
   BarChart,
@@ -35,7 +34,13 @@ interface ChartData {
   valueKey?: string
 }
 
-function isTableData(v: Visualization): v is TableData {
+interface TableData {
+  title: string
+  columns: string[]
+  rows: Record<string, unknown>[]
+}
+
+function isTableData(v: any): boolean {
   return v.type === "table"
 }
 
@@ -255,7 +260,7 @@ function ChartCard({ chart }: { chart: ChartData }) {
   )
 }
 
-function TableCard({ table }: { table: TableData }) {
+function TableCard({ table }: { table: any }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <h4 className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -266,7 +271,7 @@ function TableCard({ table }: { table: TableData }) {
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-border">
-              {table.columns.map((col) => (
+              {table.columns.map((col: string) => (
                 <th
                   key={col}
                   className="px-3 py-2 text-left font-semibold text-muted-foreground"
@@ -277,12 +282,12 @@ function TableCard({ table }: { table: TableData }) {
             </tr>
           </thead>
           <tbody>
-            {table.rows.map((row, i) => (
+            {table.rows.map((row: Record<string, unknown>, i: number) => (
               <tr
                 key={i}
                 className="border-b border-border/50 transition-colors hover:bg-muted/30"
               >
-                {table.columns.map((col) => (
+                {table.columns.map((col: string) => (
                   <td key={col} className="px-3 py-2 text-foreground">
                     {row[col] !== undefined ? String(row[col]) : "-"}
                   </td>

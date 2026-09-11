@@ -4,8 +4,10 @@
 //   - src/tools/relationship_graph.py (communities + centrality)
 //
 // No dependencies; safe to run in the browser.
+// Uses generic types to avoid manual interface definitions.
 
 export type DataValue = string | number | boolean | null | undefined
+
 export type DataRow = Record<string, DataValue>
 
 export function toNumber(v: DataValue): number | null {
@@ -80,7 +82,7 @@ export function guessCategoricalCol(
 
 // ─── Time series (ported from _build_time_series_chart) ───
 
-export interface SeriesPoint {
+export type SeriesPoint = {
   name: string
   value: number
 }
@@ -148,7 +150,7 @@ export function aggregateCategory(
 
 // ─── Bivariate scatter (ported from _build_scatter_chart) ───
 
-export interface ScatterPoint {
+export type ScatterPoint = {
   x: number
   y: number
   label: string
@@ -202,7 +204,7 @@ export function scatterPoints(
 
 // ─── Waterfall bridge (ported from _build_waterfall_chart) ───
 
-export interface WaterfallSegment {
+export type WaterfallSegment = {
   name: string
   base: number
   span: number
@@ -237,7 +239,7 @@ export function waterfallSegments(
 
 // ─── Policy simulation curve (ported from _build_simulation_curve_chart) ───
 
-export interface SimulationCurve {
+export type SimulationCurve = {
   buffers: string[]
   gross: number[]
   holding: number[]
@@ -271,13 +273,13 @@ export function simulationCurve(
 
 // ─── Relationship graph (ported from tools/relationship_graph.py) ───
 
-export interface GraphEdge {
+export type GraphEdge = {
   source: string
   target: string
   weight: number
 }
 
-export interface GraphNode {
+export type GraphNode = {
   id: string
   degree: number
   centrality: number
@@ -286,7 +288,7 @@ export interface GraphNode {
   y: number
 }
 
-export interface NetworkResult {
+export type NetworkResult = {
   nodes: GraphNode[]
   edges: GraphEdge[]
   communityCount: number

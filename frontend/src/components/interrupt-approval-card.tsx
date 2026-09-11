@@ -6,7 +6,7 @@ import {
   ChevronDown,
   ChevronUp,
   Shield,
-  Loader2,
+  Send,
 } from "lucide-react"
 
 interface ActionRequest {
@@ -157,10 +157,7 @@ export function InterruptApprovalCard({
                     disabled={!respondText.trim()}
                     className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
                   >
-                    <Loader2
-                      size={12}
-                      className={respondText.trim() ? "hidden" : "animate-spin"}
-                    />
+                    <Send size={12} />
                     Send Response
                   </button>
                 )}

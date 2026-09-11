@@ -1,10 +1,15 @@
+import asyncio
+
+import pytest
 from langgraph.pregel import Pregel
 
-from deep_agent.graph import SUBAGENTS, SYSTEM_PROMPT, graph
+from deep_agent.graph import SUBAGENTS, SYSTEM_PROMPT, _get_ro_agent
 
 
 def test_graph_compiles() -> None:
-    assert isinstance(graph, Pregel)
+    """The lazy-built agent must be a compiled Pregel graph."""
+    agent = asyncio.run(_get_ro_agent())
+    assert isinstance(agent, Pregel)
 
 
 def test_subagents_configured() -> None:

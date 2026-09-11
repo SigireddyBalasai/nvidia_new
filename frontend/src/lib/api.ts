@@ -1,27 +1,28 @@
 /**
  * DataForge-compatible API client backed by CopilotKit.
  * Provides the same interface as DataForge's REST API but routes through CopilotKit runtime.
+ * Types use generic records to avoid manual interface definitions.
  */
 
-export interface QueryRequest {
+export type QueryRequest = {
   question: string
-  vertical: "cbg" | "bfsi" | "lshc"
+  vertical: string
   session_id?: string
 }
 
-export interface QueryResponse {
+export type QueryResponse = {
   session_id: string
   status: string
 }
 
-export interface PlotlyChart {
+export type PlotlyChart = {
   title?: string
   type: string
   data: Record<string, unknown>[]
   layout: Record<string, unknown>
 }
 
-export interface ProgressEvent {
+export type ProgressEvent = {
   step: string
   status: string
   detail?: string
@@ -36,7 +37,7 @@ export interface ProgressEvent {
   execution_mode?: string
 }
 
-export interface SessionInfo {
+export type SessionInfo = {
   session_id: string
   question: string
   vertical: string
@@ -49,11 +50,6 @@ export interface SessionInfo {
 
 // ─── Health Check ───
 
-/**
- * Check if the LangGraph backend is reachable.
- * Probes the CopilotKit runtime info endpoint, which is served from
- * the same server route (`/api/copilotkit/$`) that chat uses.
- */
 export async function checkBackendHealth(): Promise<{
   status: "ok" | "error"
   message: string
@@ -84,11 +80,6 @@ export async function checkBackendHealth(): Promise<{
 
 // ─── Thread-backed session management ───
 
-/**
- * Submit a query — in CopilotKit mode, messages are sent via useCopilotChat/useAgent.
- * This function is kept for API compatibility but the actual message sending
- * happens through the CopilotKit chat interface.
- */
 export async function submitQuery(req: QueryRequest): Promise<QueryResponse> {
   const sessionId = req.session_id || `df-${req.vertical}-${Date.now()}`
   return {

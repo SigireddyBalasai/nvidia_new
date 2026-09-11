@@ -201,7 +201,7 @@ export function ChatPanel({ isFullscreen = false }: ChatPanelProps) {
             content: unknown
             tool_calls?: unknown
           }) => ({
-            id: m.id || `msg-${Date.now()}`,
+            id: m.id || crypto.randomUUID(),
             role: (
               m.type === "human"
                 ? "user"

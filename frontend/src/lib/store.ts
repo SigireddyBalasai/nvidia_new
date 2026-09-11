@@ -5,71 +5,10 @@
  */
 import { create } from "zustand"
 
-export type Vertical = "cbg" | "bfsi" | "lshc"
-
-export interface PlotlyChart {
-  data: any[]
-  layout?: any
-  title?: string
-  type?: string
-  xKey?: string
-  yKey?: string
-  nameKey?: string
-  valueKey?: string
-}
-
-export interface TableData {
-  type: "table"
-  title: string
-  columns: string[]
-  rows: Record<string, unknown>[]
-}
-
-export type Visualization = PlotlyChart | TableData
-
-export type AgentStatus = "idle" | "active" | "completed" | "skipped"
-
-export interface AgentStates {
-  query: AgentStatus
-  analysis: AgentStatus
-  optimization: AgentStatus
-  insights: AgentStatus
-}
-
-export interface StepProgress {
-  step: string
-  status: "pending" | "started" | "completed" | "failed" | "skipped"
-  detail?: string
-  duration_ms?: number
-  step_number?: number
-  total_steps?: number
-  agent?: string
-  is_loopback?: boolean
-}
-
-export interface ProgressEvent {
-  step?: string
-  status?: string
-  detail?: string
-  duration_ms?: number
-  step_number?: number
-  total_steps?: number
-  agent?: string
-  is_loopback?: boolean
-  execution_mode?: string
-}
-
-const DEFAULT_AGENT_STATES: AgentStates = {
-  query: "idle",
-  analysis: "idle",
-  optimization: "idle",
-  insights: "idle",
-}
-
-interface DataForgeState {
+export interface DataForgeState {
   // ─── Vertical ───
-  vertical: Vertical
-  setVertical: (v: Vertical) => void
+  vertical: string
+  setVertical: (v: string) => void
 
   // ─── Current session ───
   currentSessionId: string | null
@@ -77,9 +16,9 @@ interface DataForgeState {
   lastActiveThreadId: string | null
 
   // ─── Live Multi-Agent Execution ───
-  steps: StepProgress[]
-  setSteps: (s: StepProgress[]) => void
-  updateStep: (step: string, updates: Partial<StepProgress>) => void
+  steps: { step: string; status: string; detail?: string; duration_ms?: number }[]
+  setSteps: (s: { step: string; status: string }[]) => void
+  updateStep: (step: string, updates: Partial<{ step: string; status: string }>) => void
   resetSteps: () => void
 
   currentStepNumber: number
@@ -87,15 +26,15 @@ interface DataForgeState {
   activeAgent: string | null
   isLoopback: boolean
   executionMode: string | null
-  agentStates: AgentStates
-  setExecutionProgress: (evt: Partial<ProgressEvent>) => void
+  agentStates: Record<string, string>
+  setExecutionProgress: (evt: Partial<{ step?: string; status?: string; detail?: string; duration_ms?: number; step_number?: number; total_steps?: number; agent?: string; is_loopback?: boolean; execution_mode?: string }>) => void
   resetExecutionState: () => void
 
   // ─── Results & Messages ───
   response: string | null
   setResponse: (r: string | null) => void
-  charts: Visualization[]
-  setCharts: (c: Visualization[]) => void
+  charts: any[]
+  setCharts: (c: any[]) => void
   diagnostics: Record<string, unknown>
   setDiagnostics: (d: Record<string, unknown>) => void
 
@@ -160,7 +99,7 @@ export const useStore = create<DataForgeState>((set, get) => ({
   activeAgent: null,
   isLoopback: false,
   executionMode: null,
-  agentStates: { ...DEFAULT_AGENT_STATES },
+  agentStates: { query: "idle", analysis: "idle", optimization: "idle", insights: "idle" },
 
   setExecutionProgress: (evt) => {
     const currentMode = evt.execution_mode || get().executionMode
@@ -169,7 +108,7 @@ export const useStore = create<DataForgeState>((set, get) => ({
     const isLoop = Boolean(evt.is_loopback)
     const agent = evt.agent || evt.step
 
-    const newAgentStates: AgentStates = { ...get().agentStates }
+    const newAgentStates: Record<string, string> = { ...get().agentStates }
 
     if (currentMode === "sql_only") {
       newAgentStates.analysis = "skipped"
@@ -245,7 +184,7 @@ export const useStore = create<DataForgeState>((set, get) => ({
       activeAgent: null,
       isLoopback: false,
       executionMode: null,
-      agentStates: { ...DEFAULT_AGENT_STATES },
+      agentStates: { query: "idle", analysis: "idle", optimization: "idle", insights: "idle" },
     }),
 
   response: null,
@@ -291,5 +230,4 @@ export const useStore = create<DataForgeState>((set, get) => ({
   toggleVisualsFullscreen: () =>
     set((s) => ({
       panelLayout: s.panelLayout === "visuals" ? "split" : "visuals",
-    })),
-}))
+    }))}))
